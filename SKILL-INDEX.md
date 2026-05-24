@@ -731,6 +731,59 @@ Official Anthropic-managed plugins for Claude Code workflows.
 
 ---
 
+## Academic Research Skills
+
+Comprehensive Claude Code skill suite for the full academic research pipeline — from ideation to publication.
+
+### ars-plan
+- What: Socratic dialogue to walk through paper structure and research plan
+- When: Starting a new paper; need to clarify research question, method, and contribution
+- Path: D:\agent-resources\repos\academic-research-skills\academic-pipeline
+
+### ars-write
+- What: Human-in-the-loop writing assistance with style calibration and quality checks
+- When: Drafting or revising paper sections; want AI to match your voice, not replace it
+- Path: D:\agent-resources\repos\academic-research-skills\academic-paper
+
+### ars-review
+- What: Automated paper review with integrity gates (hallucination, citation, logic checks)
+- When: Pre-submission review; want a structured checklist before submitting
+- Path: D:\agent-resources\repos\academic-research-skills\academic-paper-reviewer
+
+### ars-deep-research
+- What: Deep literature search and synthesis with trust-chain citation provenance
+- When: Literature review; need to find, verify, and synthesize related work
+- Path: D:\agent-resources\repos\academic-research-skills\deep-research
+
+---
+
+## AI Engineering from Scratch
+
+435-lesson, 20-phase open curriculum for building AI systems end-to-end (Python, TypeScript, Rust, Julia). Every lesson ships a reusable artifact.
+
+### ai-engineering-curriculum
+- What: Structured curriculum from ML fundamentals to production agents and MCP servers
+- When: Learning AI engineering systematically; building reference implementations
+- Path: D:\agent-resources\repos\ai-engineering-from-scratch\phases
+
+### ai-engineering-projects
+- What: Hands-on project templates for each curriculum phase
+- When: Need a starter project for a specific AI engineering topic
+- Path: D:\agent-resources\repos\ai-engineering-from-scratch\projects
+
+---
+
+## OpenHuman
+
+Open-source personal AI super-intelligence harness — local memory, managed services, human-in-the-loop design.
+
+### openhuman
+- What: Personal AI assistant with local memory, tool integrations, and human-centered UX
+- When: Building or extending a personal AI assistant; need a reference harness architecture
+- Path: D:\agent-resources\repos\openhuman
+
+---
+
 ## Quick Reference
 
 **For comprehensive harness**: ECC (232 skills + 60 agents at skills/ecc/)
@@ -750,4 +803,7 @@ Official Anthropic-managed plugins for Claude Code workflows.
 **For coding discipline**: karpathy-guidelines
 **For session wrap-up**: session-report
 **For hooks**: hookify or hookify-writing-rules
+**For academic research**: academic-research-skills
+**For AI engineering curriculum**: ai-engineering-from-scratch
+**For personal AI assistant**: openhuman
 
