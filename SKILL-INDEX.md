@@ -525,6 +525,37 @@ These are always-available MCP servers, not file-based skills. Any agent sharing
 
 ---
 
+## ECC — Agent Harness Performance System
+
+232 skills + 60 agents for Claude Code, Codex, Cursor, OpenCode, Gemini, and more. The most comprehensive open-source agent harness available.
+
+**Install (plugin, recommended):**
+```
+/plugin marketplace add https://github.com/affaan-m/ECC
+/plugin install ecc@ecc
+```
+
+**Key commands:** `/ecc:plan`, `/code-review`, `/security-scan`, `/build-fix`, `/refactor-clean`, `/test-coverage`, `/instinct-status`, `/evolve`, `/harness-audit`
+
+**Components at** `D:\agent-resources\skills\ecc\`:
+- `skills/` — 232 workflow skills (TDD, security, frontend, backend, ML, agent-harness, etc.)
+- `agents/` — 60 specialized subagents (architect, code-reviewer, security-reviewer, tdd-guide, planner, etc.)
+- `rules/` — always-on coding guidelines (common + language-specific: TS, Python, Go, Swift, PHP)
+- `hooks/` — event-driven automations (tool use, session start/stop, file edits)
+- `mcp-configs/` — MCP server definitions (GitHub, Supabase, Vercel, etc.)
+- `COMMANDS-QUICK-REF.md` — full command reference
+- `the-shortform-guide.md` — quick-start guide
+
+**Notable features:**
+- AgentShield: 102-rule security scanner for CLAUDE.md, hooks, MCP configs
+- Continuous Learning v2: instinct extraction with confidence scoring
+- Dashboard GUI: `python3 ecc_dashboard.py` or `npm run dashboard`
+- Hook tuning via env vars: `ECC_HOOK_PROFILE=minimal|standard|strict`
+
+Path: D:\agent-resources\skills\ecc\
+
+---
+
 ## Karpathy Guidelines
 
 Behavioral guidelines derived from Andrej Karpathy's observations on LLM coding pitfalls.
@@ -702,6 +733,7 @@ Official Anthropic-managed plugins for Claude Code workflows.
 
 ## Quick Reference
 
+**For comprehensive harness**: ECC (232 skills + 60 agents at skills/ecc/)
 **For debugging**: systematic-debugging
 **For features**: test-driven-development or feature-dev (plugin)
 **For parallel work**: dispatching-parallel-agents
