@@ -1,6 +1,18 @@
-# Skill Index (auto-generated)
+# Skill Index
 
-Use this file to find the right skill for your task. Read the skill's SKILL.md or README.md before using it.
+Use this file to find the right skill for your task. Read the skill's `SKILL.md` or README before using it.
+
+## Routing Protocol
+
+Agents should trigger skills by task intent, not only when the user names a skill.
+
+1. Classify the work: debugging, README, research audit, security, frontend, browser, MCP, documents, game, writing, memory, or architecture.
+2. Search this index for matching `What` / `When` lines.
+3. Read the selected skill's `SKILL.md`.
+4. Follow the skill's workflow and use bundled scripts/references when relevant.
+5. If no existing skill fits a complex task, search curated resources or public upstreams before inventing a workflow.
+
+Public-safety note: this index is documentation, not a credential store. Do not add API keys, tokens, private paths with secrets, or account state.
 
 ## Obra-Superpowers
 
@@ -842,4 +854,3 @@ Autonomous novel writing AI agent with multi-agent pipeline and web workbench.
 **For academic research**: academic-research-skills
 **For AI engineering curriculum**: ai-engineering-from-scratch
 **For personal AI assistant**: openhuman
-

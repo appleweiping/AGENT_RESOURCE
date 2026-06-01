@@ -384,6 +384,6 @@ repo_resource_id = listed.data.first.id
 client.beta.sessions.resources.update(
   repo_resource_id,
   session_id: session.id,
-  authorization_token: "ghp_your_new_github_token"
+  authorization_token: "<github-token>"
 )
 ```

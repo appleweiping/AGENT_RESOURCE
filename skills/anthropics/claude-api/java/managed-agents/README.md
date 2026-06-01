@@ -437,6 +437,6 @@ var repoResourceId = listed.data().get(0).asGitHubRepository().id();
 
 client.beta().sessions().resources().update(repoResourceId, ResourceUpdateParams.builder()
     .sessionId(session.id())
-    .authorizationToken("ghp_your_new_github_token")
+    .authorizationToken("<github-token>")
     .build());
 ```

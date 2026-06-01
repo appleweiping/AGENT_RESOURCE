@@ -5,124 +5,100 @@
 <h1 align="center">agent-resources</h1>
 
 <p align="center">
-  <strong>Curated skill library, workflow templates, and reference repositories for multi-agent AI development.</strong>
+  <strong>Curated skills, workflows, references, and routing guidance for agentic development.</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/skills-120+-orange" alt="Skills">
-  <img src="https://img.shields.io/badge/repos-15-blue" alt="Repos">
-  <img src="https://img.shields.io/badge/slash_commands-22-green" alt="Commands">
-  <img src="https://img.shields.io/badge/license-private-red" alt="License">
+  <img src="https://img.shields.io/badge/skills-curated-orange" alt="Curated skills">
+  <img src="https://img.shields.io/badge/routing-implicit-blue" alt="Implicit routing">
+  <img src="https://img.shields.io/badge/memory-agentmemory-green" alt="agentmemory">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-lightgrey" alt="Apache-2.0">
 </p>
 
 ---
 
-## Overview
+## What This Is
 
-A curated collection of AI agent skills, workflow templates, reference implementations, and operational resources. Used by a 6-agent collaboration system (Claude Opus, Codex GPT-5.5, DeepSeek, OpenCode, Sonnet, Haiku) as a shared skill library.
+`agent-resources` is a D-drive-first library of reusable agent skills, workflow templates, references, and source mirrors.
 
-Agents check this directory before starting complex tasks. If a relevant skill exists here, they use it instead of improvising.
+Its job is simple: before an agent improvises a complex workflow, it should check this repository, find the right skill by task intent, read that skill's `SKILL.md`, and use the existing method.
 
-## Structure
+This repository is designed to be public-safe. It should contain reusable instructions, scripts, templates, and provenance notes; it must not contain local account state, API keys, runtime caches, private logs, or generated toolchain payloads.
 
-```
-agent-resources/
-├── skills/              # Installable skill collections
-│   ├── vipin/           # Personal custom skills (Lark, email, frontend, paper-orchestra)
-│   ├── anthropics/      # Anthropic official skills (claude-api, mcp-builder, webapp-testing)
-│   ├── obra-superpowers/# Advanced workflows (debugging, TDD, parallel-agents, code-review)
-│   ├── composio/        # 1000+ SaaS automation connectors
-│   ├── standalone/      # Independent skills (mattpocock, nuwa-skill, deepseek-mcp)
-│   ├── context-engineering-kit/  # DDD, TDD, review, reflexion, kaizen
-│   └── trailofbits/     # Security audit skills
-│
-├── slash-commands/      # Reusable slash commands
-│   ├── create-pr        # Standard PR creation flow
-│   ├── fix-github-issue # Issue resolution workflow
-│   ├── pr-review        # PR review checklist
-│   ├── commit           # Structured commit flow
-│   ├── context-prime    # Context preloading
-│   ├── optimize         # Code optimization workflow
-│   └── ...              # 22 total
-│
-├── repos/               # Reference implementations (git submodules)
-│   ├── awesome-claude-code/
-│   ├── awesome-ai-agents/
-│   ├── context-engineering-kit/
-│   ├── obra-superpowers/
-│   ├── claude-memory-kit/
-│   ├── OpenHands/
-│   └── ...              # 15 total
-│
-├── references/          # Documentation and guides
-│   ├── official-documentation/
-│   ├── claude.md-files/
-│   ├── slash-commands/
-│   └── workflows-knowledge-guides/
-│
-├── hooks/               # Git/session hooks
-├── templates/           # README and project templates
-└── tools/               # Utility scripts
-```
+## Start Here
+
+| File or folder | Purpose |
+| --- | --- |
+| `SKILL-INDEX.md` | Main routing map: what each skill does, when to use it, and where it lives. |
+| `skills/` | Curated installable skill collections. |
+| `slash-commands/` | Reusable command workflows and checklists. |
+| `references/` | Documentation, guides, and reusable source notes. |
+| `templates/` | Project and README templates. |
+| `tools/` | Small utility scripts. |
+
+`repos/` is intentionally ignored by Git. Keep full upstream clones and bulky mirrors local unless a small curated subset is deliberately promoted into `skills/`, `references/`, or `templates/`.
+
+## Implicit Skill Routing
+
+Agents should trigger skills from user intent, not only from exact skill names.
+
+1. Classify the task: debugging, README, research audit, frontend, MCP, security, browser, document, game, writing, etc.
+2. Search `SKILL-INDEX.md` and relevant skill frontmatter.
+3. Read the matched `SKILL.md`.
+4. Use bundled scripts/references when the skill provides them.
+5. Save useful routing lessons to agentmemory or durable docs.
+
+Examples:
+
+| User asks for | Use |
+| --- | --- |
+| "review this paper", "citation check", "experiment audit" | Project ARIS skills first. |
+| README polish, repo presentation, public onboarding | README/documentation skills. |
+| Broken tests, flaky behavior, unfamiliar error | Systematic debugging skills. |
+| Agent memory, MCP, tool routing, wrapper regressions | Agent architecture / MCP skills. |
+| New or updated skill | Skill creator / skill evaluation skills. |
 
 ## Skill Collections
 
-### vipin/ — Personal Custom Skills
+| Collection | Use |
+| --- | --- |
+| `vipin/` | Local custom skills for communication, Lark/Feishu, frontend, paper workflows, and publishing. |
+| `anthropics/` | Anthropic-oriented skills for API, MCP, web app testing, frontend design, and documents. |
+| `obra-superpowers/` | Engineering workflows such as debugging, TDD, code review, planning, and parallel work. |
+| `context-engineering-kit/` | Context engineering, DDD/TDD/review/reflexion/kaizen workflows. |
+| `trailofbits/` | Security, audit, static analysis, and protocol review skills. |
+| `ecc/` | Large agent harness skill and agent collection. |
+| `standalone/` | Independent skill packs and references. |
 
-| Skill | Purpose |
-|-------|---------|
-| paper-orchestra | End-to-end paper writing pipeline |
-| email-assistant | Gmail automation |
-| communication-assistant | Multi-platform messaging |
-| frontend-design | Production UI generation |
-| lark-* (11 skills) | Feishu/Lark full integration |
-| chrome-automation | Browser automation |
+## Operating Rules
 
-### anthropics/ — Official Anthropic Skills
+- Keep skills discoverable: `SKILL.md` frontmatter descriptions should say exactly when the skill should trigger.
+- Preserve source and license provenance for imported skill packs.
+- Prefer small curated skill folders over dumping whole upstream repositories.
+- Do not commit `repos/`, caches, browser profiles, generated runtime state, auth files, `.env`, or secrets.
+- Audit untracked additions before committing them.
+- Use `agentmemory` for live memory and cross-agent signals; use this repo for reusable skill assets and routing documentation.
 
-| Skill | Purpose |
-|-------|---------|
-| claude-api | Build Claude API applications |
-| mcp-builder | Create MCP servers |
-| webapp-testing | End-to-end web app testing |
-| frontend-design | Anthropic's frontend patterns |
-| pdf/docx/pptx/xlsx | Document generation |
+## Public-Safety Checklist
 
-### obra-superpowers/ — Advanced Workflows
+Before changing repo visibility or publishing a release:
 
-| Skill | Purpose |
-|-------|---------|
-| systematic-debugging | Structured bug diagnosis |
-| test-driven-development | TDD workflow |
-| dispatching-parallel-agents | Multi-agent task distribution |
-| receiving-code-review | Handle review feedback |
-| requesting-code-review | Request and structure reviews |
-| subagent-driven-development | Orchestrate sub-agents |
+```powershell
+git status --short
+git ls-files
+rg -n --hidden -S "sk-|api[_-]?key|token|secret|password|BEGIN .*PRIVATE KEY" .
+```
 
-### context-engineering-kit/ — Context Engineering
+Treat matches as findings until reviewed. Some skill names contain `sk-` substrings and are false positives; real credentials must be removed and rotated before publication.
 
-| Skill | Purpose |
-|-------|---------|
-| ddd | Domain-Driven Design |
-| tdd | Test-Driven Development |
-| review | Code review methodology |
-| reflexion | Self-reflection patterns |
-| kaizen | Continuous improvement |
-| sadd | System Architecture Design |
+## Related Projects
 
-## Usage Rules
+| Project | Role |
+| --- | --- |
+| [vipin-wiki](https://github.com/appleweiping/vipin-wiki) | Public knowledge base and canonical agent operating contract. |
+| [devtools-public](https://github.com/appleweiping/devtools-public) | Clean public export of local Windows agent launchers and health checks. |
+| [agentmemory](https://github.com/rohitg00/agentmemory) | Upstream memory and MCP collaboration substrate. |
 
-1. **Check before building**: Before starting any complex task, agents check this directory for existing skills.
-2. **Vipin skills first**: Custom skills in `skills/vipin/` are tailored and take priority.
-3. **Research uses ARIS**: Research projects use ARIS skills (installed in the project repo, not here).
-4. **Download new skills**: If no existing skill fits, search GitHub for high-quality alternatives and install here.
-5. **Don't duplicate**: If a skill exists here, don't reimplement it in the project.
+## License
 
-## Related
-
-| Resource | Location |
-|----------|----------|
-| ARIS Research Skills | `D:\research\Vipin's Knowledgebase\.claude\skills\aris\` |
-| Shared Agent Memory | `D:\research\Vipin's Knowledgebase\memory\` |
-| Agent Infrastructure | [devtools](https://github.com/appleweiping/devtools) |
-| Knowledge Base | [vipin-wiki](https://github.com/appleweiping/vipin-wiki) |
+Apache-2.0. Imported skill packs may carry their own upstream licenses; preserve those notices where present.

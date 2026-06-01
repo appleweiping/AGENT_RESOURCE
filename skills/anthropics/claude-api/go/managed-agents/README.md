@@ -553,7 +553,7 @@ repoResourceID := listed.Data[0].ID
 
 _, err = client.Beta.Sessions.Resources.Update(ctx, repoResourceID, anthropic.BetaSessionResourceUpdateParams{
     SessionID:          session.ID,
-    AuthorizationToken: "ghp_your_new_github_token",
+    AuthorizationToken: "<github-token>",
 })
 if err != nil {
     panic(err)

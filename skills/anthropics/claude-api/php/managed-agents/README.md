@@ -430,6 +430,6 @@ $repoResourceId = $listed->data[0]->id;
 $client->beta->sessions->resources->update(
     $repoResourceId,
     sessionID: $session->id,
-    authorizationToken: 'ghp_your_new_github_token',
+    authorizationToken: '<github-token>',
 );
 ```
