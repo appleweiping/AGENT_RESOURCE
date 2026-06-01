@@ -5,6 +5,7 @@ $inventoryScript = Join-Path $skillRoot "scripts\New-WorkstationInventory.ps1"
 $movePlanScript = Join-Path $skillRoot "scripts\New-MovePlan.ps1"
 $moveScript = Join-Path $skillRoot "scripts\Invoke-ApprovedMoveBatch.ps1"
 $rollbackScript = Join-Path $skillRoot "scripts\Invoke-RollbackBatch.ps1"
+$allPreflightScript = Join-Path $skillRoot "scripts\Test-MovePlanBatches.ps1"
 
 function Assert-True {
     param([bool]$Condition, [string]$Message)
@@ -60,6 +61,13 @@ try {
     Assert-True (-not $preflightResult.moves_executed) "Preflight unexpectedly executed moves."
     Assert-True (Test-Path -LiteralPath $preflightResult.preflight_manifest -PathType Leaf) "Preflight manifest was not created."
     Assert-True (Test-Path -LiteralPath (Join-Path $downloads "paper.pdf") -PathType Leaf) "Preflight moved source file."
+
+    $allPreflightRaw = & $allPreflightScript -MovePlanPath $planPath
+    $allPreflightResult = $allPreflightRaw | ConvertFrom-Json
+    Assert-True ($allPreflightResult.failed_count -eq 0) "All-batch preflight reported failures."
+    Assert-True ($allPreflightResult.batch_count -ge 1) "All-batch preflight did not check batches."
+    Assert-True (-not $allPreflightResult.moves_executed) "All-batch preflight unexpectedly executed moves."
+    Assert-True (Test-Path -LiteralPath $allPreflightResult.preflight_summary -PathType Leaf) "All-batch preflight summary was not created."
 
     $appliedRaw = & $moveScript -MovePlanPath $planPath -BatchId $testBatchId -Approved
     $appliedResult = $appliedRaw | ConvertFrom-Json

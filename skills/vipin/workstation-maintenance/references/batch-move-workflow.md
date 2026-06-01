@@ -42,6 +42,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\v
 
 Preflight writes a local `workstation-preflight-*.json` manifest and does not create destination directories or move files.
 
+To preflight every batch in a move plan:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Test-MovePlanBatches.ps1" -MovePlanPath "<move-plan.json>"
+```
+
+This writes `workstation-preflight-summary-*.json` plus per-batch preflight manifests under the output directory.
+
 Run:
 
 ```powershell

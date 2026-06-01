@@ -80,4 +80,15 @@ Preflight manifests record:
 - `items`
 - `approved_command`
 
+Preflight summary manifests record:
+
+- `checked_at`
+- `move_plan_path`
+- `batch_count`
+- `passed_count`
+- `failed_count`
+- `checked_item_count`
+- `moves_executed`: should be `false`
+- `results`
+
 Do not commit `.wiki-tmp/workstation-maintenance` manifests unless the user explicitly requests a local evidence archive. They can contain private filenames.
