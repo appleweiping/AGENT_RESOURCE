@@ -106,4 +106,42 @@ Approval packet summaries record:
 - `preflight`
 - `batches`
 
+Drive-root organization plans record immediate children of a drive root:
+
+- `schema_version`
+- `generated_at`
+- `drive_root`
+- `target_root`
+- `excluded_names`
+- `item_count`
+- `move_count`
+- `record_only_count`
+- `items`
+
+Drive-root items record:
+
+- `id`, e.g. `dr_0005`
+- `name`
+- `source_path`
+- `kind`
+- `attributes`
+- `category`
+- `risk_tier`
+- `action`: `move-with-junction` or `record-only`
+- `target_path`: destination under `D:\_Organized\<Bucket>\_RootDirs\` when actionable
+- `junction_path`: original root path to preserve as an NTFS junction
+- `reason`
+
+Drive-root applied manifests record:
+
+- `applied_at`
+- `plan_path`
+- `drive_root`
+- `target_root`
+- `moved_count`
+- `items`
+- `rollback_command`
+
+Drive-root applied items may include `already_completed` when a resume run counted an existing expected junction instead of moving it again, and `repaired_missing_junction` when a previous partial run had already moved the target but failed before recreating the source junction.
+
 Do not commit `.wiki-tmp/workstation-maintenance` manifests unless the user explicitly requests a local evidence archive. They can contain private filenames.

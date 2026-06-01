@@ -30,7 +30,7 @@ Sensitive patterns include medical, health, bank, finance, tax, passport, visa, 
 
 ## Move Preconditions
 
-A physical move requires all of the following:
+File-level physical moves require all of the following:
 
 1. A dry-run inventory manifest.
 2. A move plan generated from that manifest.
@@ -40,6 +40,18 @@ A physical move requires all of the following:
 6. An applied manifest with rollback source and destination for every moved item.
 
 `Invoke-ApprovedMoveBatch.ps1 -PreflightOnly` may be run before approval because it performs checks and writes a preflight manifest without moving files.
+
+## D-Drive Root Directory Organization
+
+Directory-level root organization is a separate workflow from file-level cleanup.
+
+- Use `New-DriveRootOrganizationPlan.ps1` to classify immediate `D:\` children only.
+- Move eligible root directories under `D:\_Organized\<Bucket>\_RootDirs\`.
+- Leave a junction at the original root path so existing absolute paths keep working.
+- Do not recurse into or move `D:\Research`, `D:\agent-resources`, `D:\devtools`, `D:\devtools-public`, or `D:\_Organized`.
+- Treat active roots such as `D:\Company`, `D:\Project`, `D:\Healthcare`, `D:\Game_develop`, `D:\frontend`, and `D:\WeipingYan_portfolio` as record-only unless the user explicitly requests a project-specific migration.
+- Run `Invoke-DriveRootOrganizationPlan.ps1 -PreflightOnly` before approved execution.
+- If Windows denies a root because of ACLs or active process locks, pass its manifest ID through `-SkipIds`, record it as a classified exception, and retry only after the lock is resolved.
 
 ## Delete Policy
 

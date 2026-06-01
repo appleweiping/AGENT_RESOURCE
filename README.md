@@ -52,7 +52,7 @@ Examples:
 
 | User asks for | Use |
 | --- | --- |
-| "organize my C/D drives", "clean up workstation", "keep devtools and wiki in sync" | `vipin/workstation-maintenance`, then `vipin-wiki` for public-safe wiki updates. Live move plans defer recent files, cap batch sizes by default, generate approval packets, and can preflight every batch without moving files. Broad approval can cover all currently passing low-risk batches. |
+| "organize my C/D drives", "clean up workstation", "organize D root folders", "keep devtools and wiki in sync" | `vipin/workstation-maintenance`, then `vipin-wiki` for public-safe wiki updates. Live file move plans defer recent files, cap batch sizes by default, generate approval packets, and can preflight every batch without moving files. D-root plans can move eligible root directories into `D:\_Organized` while preserving old paths as junctions. Broad approval can cover all currently passing low-risk batches. |
 | "review this paper", "citation check", "experiment audit" | Project ARIS skills first. |
 | README polish, repo presentation, public onboarding | README/documentation skills. |
 | Broken tests, flaky behavior, unfamiliar error | Systematic debugging skills. |

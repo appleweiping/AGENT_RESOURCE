@@ -1,5 +1,7 @@
 # Batch Move Workflow
 
+This reference covers file-level cleanup batches. For immediate D-drive root directory organization, use the drive-root commands at the end of this file.
+
 ## Dry Run
 
 1. Generate inventory.
@@ -81,3 +83,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\v
 ```
 
 Rollback is also preflighted. If a rollback destination already exists, the script stops instead of overwriting.
+
+## D-Drive Root Directory Plan
+
+Use this when the task is to organize immediate `D:\` root directories into clear buckets without breaking old absolute paths.
+
+```powershell
+$out = "D:\Research\vipin's knowledgebase\.wiki-tmp\workstation-maintenance"
+powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\New-DriveRootOrganizationPlan.ps1" -DriveRoot "D:\" -OutputDir $out
+powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-DriveRootOrganizationPlan.ps1" -PlanPath "<d-drive-root-plan.json>" -PreflightOnly
+& "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-DriveRootOrganizationPlan.ps1" -PlanPath "<d-drive-root-plan.json>" -Approved -SkipIds @("dr_0016","dr_0041")
+```
+
+The drive-root executor moves actual data into `D:\_Organized\<Bucket>\_RootDirs\...` and creates an NTFS junction at the old root path. If a directory is locked or access is denied, do not force a partial move; rerun with that item in `-SkipIds` and record it as a classified exception in the wiki.
+
+Rollback:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-DriveRootOrganizationPlan.ps1" -PlanPath "<d-drive-root-plan.json>" -RollbackManifestPath "<d-drive-root-applied.json>"
+```

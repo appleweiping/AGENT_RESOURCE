@@ -226,8 +226,8 @@ Systematic approaches to context, documentation, and development practices.
 Specialized skills for workstation maintenance, Lark, communication, and content creation.
 
 ### workstation-maintenance
-- What: Safely inventory, classify, organize, and maintain Vipin's Windows workstation across C:/, D:/, and G:/, including devtools, agent-resources, vipinknowledge, agent skill sync, approval packets, full-plan preflight, approved moves, broad-approval execution, and rollback
-- When: Cleaning up drives, organizing local files, protecting D:/Research, preparing type-grouped 30-day-age-gated batch-confirmed moves, preflighting all batches without moving files, executing broadly approved low-risk batches, or coordinating agent infrastructure upgrades
+- What: Safely inventory, classify, organize, and maintain Vipin's Windows workstation across C:/, D:/, and G:/, including file-level approved moves, D-drive root move-with-junction organization, devtools, agent-resources, vipinknowledge, agent skill sync, preflight, broad-approval execution, and rollback
+- When: Cleaning up drives, organizing local files or D-root directories, protecting D:/Research, preparing type-grouped 30-day-age-gated batch-confirmed file moves, preflighting all batches without moving files, moving D-root directories into D:/_Organized while preserving old paths as junctions, executing broadly approved low-risk batches, or coordinating agent infrastructure upgrades
 - Path: D:\agent-resources\skills\vipin\workstation-maintenance
 
 ### lark-cli
