@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ManifestPath,
     [string]$OutputDir = "",
-    [string]$TargetRoot = "D:\_Organized"
+    [string]$TargetRoot = "D:\_Organized",
+    [int]$MinimumAgeDays = 30
 )
 
 $ErrorActionPreference = "Stop"
@@ -33,6 +34,25 @@ function Format-ByteSize {
     return "$Bytes B"
 }
 
+function Get-MoveSubcategory {
+    param($Item)
+    $ext = [System.IO.Path]::GetExtension([string]$Item.path).ToLowerInvariant()
+    if ($Item.category -eq "MediaAssets") { return "mediaassets-old" }
+    if ($Item.category -eq "TempCache") { return "tempcache-old" }
+    if ($Item.category -ne "Downloads") { return (Get-SafeBatchName $Item.category) }
+
+    $archiveExts = @(".zip", ".7z", ".rar", ".tar", ".gz", ".bz2", ".xz")
+    $installerExts = @(".exe", ".msi", ".dmg", ".pkg", ".jar")
+    $mediaExts = @(".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".mp3", ".wav", ".flac", ".mp4", ".mov", ".avi", ".mkv")
+    $documentExts = @(".pdf", ".md", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".csv", ".txt", ".html", ".htm", ".ipynb", ".nb")
+
+    if ($archiveExts -contains $ext) { return "downloads-archives-old" }
+    if ($installerExts -contains $ext) { return "downloads-installers-old" }
+    if ($mediaExts -contains $ext) { return "downloads-media-old" }
+    if ($documentExts -contains $ext) { return "downloads-documents-old" }
+    return "downloads-other-old"
+}
+
 $manifestFull = Get-FullPathSafe $ManifestPath
 if (-not (Test-Path -LiteralPath $manifestFull -PathType Leaf)) {
     throw "Manifest not found: $manifestFull"
@@ -46,12 +66,36 @@ $out = Get-FullPathSafe $OutputDir
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 
 $eligible = @($manifest.items | Where-Object { $_.move_eligible -eq $true })
+$effectiveMinimumAgeDays = $MinimumAgeDays
+if ($manifest.mode -eq "Fixture") {
+    $effectiveMinimumAgeDays = 0
+}
+$cutoff = (Get-Date).AddDays(-1 * $effectiveMinimumAgeDays)
+$deferred = [System.Collections.Generic.List[object]]::new()
+$batchCandidates = [System.Collections.Generic.List[object]]::new()
+foreach ($item in $eligible) {
+    $mtime = [datetime]$item.mtime
+    if ($effectiveMinimumAgeDays -gt 0 -and $mtime -gt $cutoff) {
+        $deferred.Add([pscustomobject][ordered]@{
+            id = $item.id
+            path = $item.path
+            category = $item.category
+            mtime = $item.mtime
+            reason = "modified within minimum age window"
+            minimum_age_days = $effectiveMinimumAgeDays
+        })
+    } else {
+        $batchCandidates.Add($item)
+    }
+}
 $batches = [System.Collections.Generic.List[object]]::new()
 
-$eligible | Group-Object category | Sort-Object Name | ForEach-Object {
-    $category = $_.Name
+$batchCandidates | Group-Object { Get-MoveSubcategory $_ } | Sort-Object Name | ForEach-Object {
+    $subcategory = $_.Name
     $batchItems = @($_.Group | Sort-Object path)
     if ($batchItems.Count -eq 0) { return }
+    $firstItem = $batchItems | Select-Object -First 1
+    $category = [string]$firstItem.category
     foreach ($item in $batchItems) {
         if (Test-PathUnder $item.resolved_path "D:\Research") {
             throw "Move plan attempted to include D:\Research item: $($item.resolved_path)"
@@ -66,16 +110,18 @@ $eligible | Group-Object category | Sort-Object Name | ForEach-Object {
             throw "Destination outside target root for $($item.id): $($item.proposed_destination)"
         }
     }
-    $batchId = "batch-" + (Get-SafeBatchName $category)
+    $batchId = "batch-" + (Get-SafeBatchName $subcategory)
     $destRoots = @($batchItems | ForEach-Object { Split-Path -Parent $_.proposed_destination } | Sort-Object -Unique)
     $totalSize = [long](($batchItems | Measure-Object -Property size -Sum).Sum)
     $batches.Add([pscustomobject][ordered]@{
         batch_id = $batchId
         category = $category
+        subcategory = $subcategory
         item_count = $batchItems.Count
         total_size_bytes = $totalSize
         total_size_human = (Format-ByteSize $totalSize)
         risk_tier = "low"
+        minimum_age_days = $effectiveMinimumAgeDays
         requires_user_approval = $true
         destination_root = $TargetRoot
         destination_dirs = $destRoots
@@ -92,8 +138,14 @@ $plan = [ordered]@{
     generated_at = (Get-Date).ToString("o")
     manifest_path = $manifestFull
     target_root = $TargetRoot
+    minimum_age_days = $effectiveMinimumAgeDays
     batch_count = $batches.Count
-    item_count = $eligible.Count
+    item_count = $batchCandidates.Count
+    deferred_count = $deferred.Count
+    deferred_reasons = @($deferred | Group-Object reason | Sort-Object Name | ForEach-Object {
+        [pscustomobject][ordered]@{ reason = $_.Name; count = $_.Count }
+    })
+    deferred_items = $deferred
     batches = $batches
 }
 
@@ -106,10 +158,14 @@ $lines.Add("Generated: $((Get-Date).ToString('o'))")
 $lines.Add("")
 $lines.Add("This plan is not approval. Execute a batch only after the user names the batch ID and the move script is called with `-Approved`.")
 $lines.Add("")
-$lines.Add("| Batch ID | Category | Items | Size | Destination root |")
-$lines.Add("| --- | --- | ---: | ---: | --- |")
+$lines.Add("Minimum age for executable batches: $effectiveMinimumAgeDays days.")
+$lines.Add("")
+$lines.Add("Deferred recent items: $($deferred.Count)")
+$lines.Add("")
+$lines.Add("| Batch ID | Category | Subcategory | Items | Size | Destination root |")
+$lines.Add("| --- | --- | --- | ---: | ---: | --- |")
 foreach ($batch in $batches) {
-    $lines.Add("| `$($batch.batch_id)` | $($batch.category) | $($batch.item_count) | $($batch.total_size_human) | `$($batch.destination_root)` |")
+    $lines.Add("| `$($batch.batch_id)` | $($batch.category) | $($batch.subcategory) | $($batch.item_count) | $($batch.total_size_human) | `$($batch.destination_root)` |")
 }
 $lines.Add("")
 $lines.Add("## Batch Details")
@@ -135,6 +191,8 @@ $lines | Set-Content -LiteralPath $mdPath -Encoding UTF8
     move_plan = $jsonPath
     markdown = $mdPath
     batch_count = $batches.Count
-    item_count = $eligible.Count
-    batches = @($batches | Select-Object batch_id, category, item_count, total_size_human, risk_tier, destination_root)
+    item_count = $batchCandidates.Count
+    deferred_count = $deferred.Count
+    minimum_age_days = $effectiveMinimumAgeDays
+    batches = @($batches | Select-Object batch_id, category, subcategory, item_count, total_size_human, risk_tier, minimum_age_days, destination_root)
 } | ConvertTo-Json -Depth 4

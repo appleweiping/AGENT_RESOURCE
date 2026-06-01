@@ -36,7 +36,8 @@ A physical move requires all of the following:
 2. A move plan generated from that manifest.
 3. A batch ID explicitly approved by the user.
 4. A preflight check that sources still exist, destinations are under the approved target root, and no source is a protected path, reparse point, directory, or active git worktree.
-5. An applied manifest with rollback source and destination for every moved item.
+5. A normal-use safety gate: live move plans default to candidates older than 30 days; recent files are deferred unless the user explicitly approves a lower age threshold.
+6. An applied manifest with rollback source and destination for every moved item.
 
 ## Delete Policy
 

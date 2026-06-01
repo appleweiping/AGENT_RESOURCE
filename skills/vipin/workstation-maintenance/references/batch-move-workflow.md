@@ -4,11 +4,14 @@
 
 1. Generate inventory.
 2. Generate move plan.
+   - Default executable batches require candidates to be older than 30 days.
+   - Recent candidates are recorded as deferred review items, not executable batches.
 3. Verify protected counts:
    - `D:\Research` entries: 0.
    - move-eligible reparse points: 0.
    - move-eligible directories: 0.
    - move-eligible git worktrees: 0.
+   - recent items in executable batches: 0, unless the user explicitly requested a lower age gate.
 
 ## Approval
 
@@ -16,10 +19,13 @@ Present only batch summaries:
 
 - batch ID
 - category
+- subcategory
 - item count
 - total size
 - destination root
 - risk tier
+- minimum age gate
+- deferred recent item count
 
 Do not show private filenames in public wiki pages. The user may inspect the local JSON/Markdown manifest directly.
 

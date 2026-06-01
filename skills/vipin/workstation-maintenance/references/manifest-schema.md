@@ -36,15 +36,24 @@ Move plans group eligible items into batches:
 
 - `batch_id`
 - `category`
+- `subcategory`
 - `item_count`
 - `total_size_bytes`
 - `total_size_human`
 - `risk_tier`
+- `minimum_age_days`
 - `requires_user_approval`
 - `destination_root`
 - `destination_dirs`
 - `item_ids`
 - `items`
+
+Move plans also include:
+
+- `minimum_age_days`: default `30` for live manifests.
+- `deferred_count`
+- `deferred_reasons`
+- `deferred_items`: local-only review records for recent candidates. Do not publish these filenames.
 
 Applied manifests record:
 

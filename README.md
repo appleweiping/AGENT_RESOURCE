@@ -52,7 +52,7 @@ Examples:
 
 | User asks for | Use |
 | --- | --- |
-| "organize my C/D drives", "clean up workstation", "keep devtools and wiki in sync" | `vipin/workstation-maintenance`, then `vipin-wiki` for public-safe wiki updates. |
+| "organize my C/D drives", "clean up workstation", "keep devtools and wiki in sync" | `vipin/workstation-maintenance`, then `vipin-wiki` for public-safe wiki updates. Live move plans defer recent files by default. |
 | "review this paper", "citation check", "experiment audit" | Project ARIS skills first. |
 | README polish, repo presentation, public onboarding | README/documentation skills. |
 | Broken tests, flaky behavior, unfamiliar error | Systematic debugging skills. |
