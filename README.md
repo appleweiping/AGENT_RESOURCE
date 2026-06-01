@@ -79,6 +79,8 @@ Examples:
 - Audit untracked additions before committing them.
 - Use `agentmemory` for live memory and cross-agent signals; use this repo for reusable skill assets and routing documentation.
 - Track provenance review notes for local skill additions, starting with [`docs/skill-provenance-audit-2026-06-01.md`](docs/skill-provenance-audit-2026-06-01.md).
+- Treat `skills/game-studios/` and `skills/godogen/` as local-only until their upstream source and redistribution license are confirmed.
+- Route `nuwa-skill` by intent only through the curated MIT-licensed core files committed in `skills/standalone/nuwa-skill/`.
 
 ## Public-Safety Checklist
 
@@ -89,6 +91,8 @@ git status --short
 git ls-files
 powershell .\tools\Test-PublicSafety.ps1
 powershell .\tools\Test-HistorySafety.ps1
+powershell .\tools\Test-PrePushSafety.ps1
+powershell .\tools\Install-PrePushHook.ps1
 ```
 
 Treat matches as findings until reviewed. The history scan permits a small allowlist of known documentation placeholders such as `ghp_your_new_github_token`; real credentials must be removed from current files, cleaned from public history, and rotated before publication.
@@ -99,6 +103,7 @@ Treat matches as findings until reviewed. The history scan permits a small allow
 powershell .\tools\Test-ImplicitSkillRouting.ps1
 powershell .\tools\Test-PublicSafety.ps1
 powershell .\tools\Test-HistorySafety.ps1
+powershell .\tools\Test-PrePushSafety.ps1
 ```
 
 This checks that `SKILL-INDEX.md` and committed `SKILL.md` frontmatter expose enough intent metadata for passive skill triggering.

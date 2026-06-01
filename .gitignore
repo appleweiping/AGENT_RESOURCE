@@ -18,3 +18,17 @@ tmp/
 *.log
 __pycache__/
 *.pyc
+
+# Local-only skill packs pending provenance/license clearance.
+skills/game-studios/
+skills/godogen/
+
+# Curated nuwa-skill subset: keep LICENSE, SKILL.md, references/, scripts/,
+# and small source assets; leave generated/examples/marketing media local.
+skills/standalone/nuwa-skill/.git/
+skills/standalone/nuwa-skill/examples/
+skills/standalone/nuwa-skill/README*.md
+skills/standalone/nuwa-skill/*.png
+skills/standalone/nuwa-skill/*.jpg
+skills/standalone/nuwa-skill/assets/*.gif
+skills/standalone/nuwa-skill/x-thread-en.md

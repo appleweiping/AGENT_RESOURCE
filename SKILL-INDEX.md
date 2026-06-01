@@ -459,8 +459,8 @@ Specialized single-purpose skills.
 - Path: D:\agent-resources\skills\standalone\darwin-skill
 
 ### nuwa-skill
-- What: NUWA model integration
-- When: Using NUWA for multimodal tasks
+- What: MIT-licensed person/mentor skill distillation workflow ("女娲造人"): deep research -> thinking-frame extraction -> runnable perspective skill.
+- When: The user wants to create, update, or choose a person/topic perspective skill from an explicit name or a vague thinking/decision need.
 - Path: D:\agent-resources\skills\standalone\nuwa-skill
 
 ### colleague-skill
@@ -805,12 +805,14 @@ Complete game development pipeline — from brainstorming to release.
 - When: Building any game; need structured workflow (brainstorm → design → architecture → sprint → QA → release)
 - Key skills: /start, /brainstorm, /create-architecture, /sprint-plan, /prototype, /vertical-slice, /playtest-report, /release-checklist
 - Path: D:\agent-resources\skills\game-studios\
+- Public status: local-only pending provenance/license clearance; do not route implicitly from the public index until cleared.
 
 ### Godogen (autonomous game generation)
 - What: Autonomous game generation pipeline with screenshot-based self-repair
 - When: Want AI to generate a complete game from a description (Godot 4 / Bevy / Babylon.js)
 - Key feature: Frame-grounded self-repair — judges progress from screenshots, not just compilation
 - Path: D:\agent-resources\skills\godogen\
+- Public status: local-only pending provenance/license clearance; do not route implicitly from the public index until cleared.
 
 ### GSD-2 (spec-driven development, 58.9k stars)
 - What: Meta-prompting system that prevents context rot; breaks work into atomic plans
@@ -834,7 +836,7 @@ Autonomous novel writing AI agent with multi-agent pipeline and web workbench.
 ## Quick Reference
 
 **For comprehensive harness**: ECC (232 skills + 60 agents at skills/ecc/)
-**For game development**: game-studios (73 skills) + godogen (autonomous gen) + GSD-2 (spec-driven)
+**For game development**: GSD-2 (spec-driven). The local game-studios and godogen packs are useful for inspection but are not public-routed until provenance/license clearance is complete.
 **For debugging**: systematic-debugging
 **For features**: test-driven-development or feature-dev (plugin)
 **For parallel work**: dispatching-parallel-agents
