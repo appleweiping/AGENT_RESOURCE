@@ -52,6 +52,7 @@ Examples:
 
 | User asks for | Use |
 | --- | --- |
+| "organize my C/D drives", "clean up workstation", "keep devtools and wiki in sync" | `vipin/workstation-maintenance`, then `vipin-wiki` for public-safe wiki updates. |
 | "review this paper", "citation check", "experiment audit" | Project ARIS skills first. |
 | README polish, repo presentation, public onboarding | README/documentation skills. |
 | Broken tests, flaky behavior, unfamiliar error | Systematic debugging skills. |
@@ -62,7 +63,7 @@ Examples:
 
 | Collection | Use |
 | --- | --- |
-| `vipin/` | Local custom skills for communication, Lark/Feishu, frontend, paper workflows, and publishing. |
+| `vipin/` | Local custom skills for workstation maintenance, communication, Lark/Feishu, frontend, paper workflows, and publishing. |
 | `anthropics/` | Anthropic-oriented skills for API, MCP, web app testing, frontend design, and documents. |
 | `obra-superpowers/` | Engineering workflows such as debugging, TDD, code review, planning, and parallel work. |
 | `context-engineering-kit/` | Context engineering, DDD/TDD/review/reflexion/kaizen workflows. |

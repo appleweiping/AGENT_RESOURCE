@@ -1,0 +1,11 @@
+name: workstation-maintenance
+version: 1.0.0
+description: Safe local drive inventory, approved batch moves, rollback, and agent infrastructure sync.
+default_prompt: |
+  Use this skill for C/D/G drive organization and workstation maintenance.
+  Generate inventory and move-plan manifests first, protect D:\Research,
+  stop before physical moves until the user approves a batch ID, and update
+  vipinknowledge only with public-safe summaries.
+handoff:
+  primary_skill: workstation-maintenance
+  wiki_partner_skill: vipin-wiki

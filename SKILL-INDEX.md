@@ -223,7 +223,12 @@ Systematic approaches to context, documentation, and development practices.
 
 ## Vipin
 
-Specialized skills for Lark, communication, and content creation.
+Specialized skills for workstation maintenance, Lark, communication, and content creation.
+
+### workstation-maintenance
+- What: Safely inventory, classify, organize, and maintain Vipin's Windows workstation across C:/, D:/, and G:/, including devtools, agent-resources, vipinknowledge, and agent skill sync
+- When: Cleaning up drives, organizing local files, protecting D:/Research, preparing batch-confirmed moves, or coordinating agent infrastructure upgrades
+- Path: D:\agent-resources\skills\vipin\workstation-maintenance
 
 ### lark-cli
 - What: Command-line interface for Lark platform operations
