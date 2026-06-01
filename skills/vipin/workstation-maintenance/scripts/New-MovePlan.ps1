@@ -35,6 +35,38 @@ function Format-ByteSize {
     return "$Bytes B"
 }
 
+function Get-UniqueDestination {
+    param(
+        [string]$DesiredDestination,
+        [string]$ItemId,
+        [hashtable]$UsedDestinations
+    )
+    $candidate = Get-FullPathSafe $DesiredDestination
+    $key = $candidate.ToLowerInvariant()
+    if (-not $UsedDestinations.ContainsKey($key) -and -not (Test-Path -LiteralPath $candidate)) {
+        return $candidate
+    }
+
+    $dir = Split-Path -Parent $candidate
+    $name = [System.IO.Path]::GetFileNameWithoutExtension($candidate)
+    $ext = [System.IO.Path]::GetExtension($candidate)
+    $safeId = Get-SafeBatchName $ItemId
+    $counter = 1
+    while ($true) {
+        $suffix = "-$safeId"
+        if ($counter -gt 1) {
+            $suffix = "$suffix-$counter"
+        }
+        $next = Join-Path $dir "$name$suffix$ext"
+        $nextFull = Get-FullPathSafe $next
+        $nextKey = $nextFull.ToLowerInvariant()
+        if (-not $UsedDestinations.ContainsKey($nextKey) -and -not (Test-Path -LiteralPath $nextFull)) {
+            return $nextFull
+        }
+        $counter += 1
+    }
+}
+
 function Get-MoveSubcategory {
     param($Item)
     $ext = [System.IO.Path]::GetExtension([string]$Item.path).ToLowerInvariant()
@@ -85,6 +117,7 @@ if ($manifest.mode -eq "Fixture") {
 $cutoff = (Get-Date).AddDays(-1 * $effectiveMinimumAgeDays)
 $deferred = [System.Collections.Generic.List[object]]::new()
 $batchCandidates = [System.Collections.Generic.List[object]]::new()
+$usedDestinations = @{}
 foreach ($item in $eligible) {
     $mtime = [datetime]$item.mtime
     if ($effectiveMinimumAgeDays -gt 0 -and $mtime -gt $cutoff) {
@@ -97,7 +130,14 @@ foreach ($item in $eligible) {
             minimum_age_days = $effectiveMinimumAgeDays
         })
     } else {
-        $batchCandidates.Add($item)
+        $candidate = $item | Select-Object *
+        $uniqueDestination = Get-UniqueDestination -DesiredDestination ([string]$candidate.proposed_destination) -ItemId ([string]$candidate.id) -UsedDestinations $usedDestinations
+        if ($uniqueDestination -ne [string]$candidate.proposed_destination) {
+            $candidate.proposed_destination = $uniqueDestination
+            $candidate.rollback_source = $uniqueDestination
+        }
+        $usedDestinations[(Get-FullPathSafe $candidate.proposed_destination).ToLowerInvariant()] = $true
+        $batchCandidates.Add($candidate)
     }
 }
 $batches = [System.Collections.Generic.List[object]]::new()

@@ -54,6 +54,12 @@ if ($items.Count -eq 0) {
     throw "Batch has no items: $BatchId"
 }
 
+$duplicateDestinations = @($items | Group-Object proposed_destination | Where-Object { $_.Count -gt 1 })
+if ($duplicateDestinations.Count -gt 0) {
+    $first = $duplicateDestinations | Select-Object -First 1
+    throw "Batch contains duplicate destination path before moving: $($first.Name)"
+}
+
 $checked = [System.Collections.Generic.List[object]]::new()
 foreach ($item in $items) {
     if (-not $item.move_eligible) {

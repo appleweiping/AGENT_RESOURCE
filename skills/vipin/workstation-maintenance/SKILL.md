@@ -36,6 +36,7 @@ This skill owns physical file organization. The `vipin-wiki` skill owns public-s
    - Run `scripts/New-MovePlan.ps1` against the inventory manifest.
    - By default, executable batches include only low-risk candidates older than 30 days; recent candidates are deferred for review so normal use is not disrupted.
    - Batches are grouped by file type and capped at 100 items by default so the user can approve narrow, understandable units.
+   - Destination paths are made unique before execution; duplicate source filenames receive stable manifest-item suffixes.
    - Review batch IDs, categories, subcategories, part numbers, item counts, size, target root, age gate, and risk tier.
    - Present only public-safe batch summaries in chat/wiki. Do not list sensitive filenames in public wiki pages.
 

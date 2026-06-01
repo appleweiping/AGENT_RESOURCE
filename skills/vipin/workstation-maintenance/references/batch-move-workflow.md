@@ -70,6 +70,8 @@ The script preflights all items before moving. It stops if any destination alrea
 
 For broad approval, repeat the approved command for each preflight-passing batch in the move plan and write a local applied summary with the per-batch applied manifest paths. Do not skip the post-move verification: moved destinations must exist, original sources should be absent, and applied paths must not include `D:\Research`.
 
+Move plans must produce unique destination paths. If two source files would land on the same target path, `New-MovePlan.ps1` appends a stable manifest item suffix before execution. `Invoke-ApprovedMoveBatch.ps1` also rejects duplicate destinations before moving anything.
+
 ## Rollback
 
 Run:

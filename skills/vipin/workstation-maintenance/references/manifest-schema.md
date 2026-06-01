@@ -59,6 +59,8 @@ Move plans also include:
 - `deferred_reasons`
 - `deferred_items`: local-only review records for recent candidates. Do not publish these filenames.
 
+Move-plan item destinations may differ from the original inventory `proposed_destination` when needed to avoid existing target files or duplicate targets inside a plan. In that case `New-MovePlan.ps1` appends a stable manifest item suffix and updates `rollback_source` to match the final unique destination.
+
 Applied manifests record:
 
 - `applied_at`
