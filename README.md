@@ -19,7 +19,7 @@
 
 ## What This Is
 
-`AGENT_RESOURCE` is a D-drive-first library of reusable agent skills, workflow templates, references, and source mirrors. `D:\agent-resources` is a compatibility junction to this canonical root.
+`AGENT_RESOURCE` is a D-drive-first library of reusable agent skills, workflow templates, references, and source mirrors. `D:\agent-resources` is a compatibility junction to this canonical root. Agents should read `AGENTS.md`, `README.md`, and `SKILL-INDEX.md` before changing shared skill assets.
 
 Its job is simple: before an agent improvises a complex workflow, it should check this repository, find the right skill by task intent, read that skill's `SKILL.md`, and use the existing method.
 
@@ -29,6 +29,7 @@ This repository is designed to be public-safe. It should contain reusable instru
 
 | File or folder | Purpose |
 | --- | --- |
+| `AGENTS.md` | Agent operating contract for shared skill/resource maintenance. |
 | `SKILL-INDEX.md` | Main routing map: what each skill does, when to use it, and where it lives. |
 | `skills/` | Curated installable skill collections. |
 | `slash-commands/` | Reusable command workflows and checklists. |
