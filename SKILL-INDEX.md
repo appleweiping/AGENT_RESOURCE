@@ -230,6 +230,11 @@ Specialized skills for workstation maintenance, Lark, communication, and content
 - When: Cleaning up drives, organizing local files or D-root directories, protecting D:/Research plus AGENT_RESOURCE, AGENTIC_SCIENCE, devtools, and public devtools exports, preparing type-grouped 30-day-age-gated batch-confirmed file moves, preflighting all batches without moving files, moving eligible D-root directories into D:/_Organized while preserving old paths as junctions, executing broadly approved low-risk batches, or coordinating agent infrastructure upgrades with weiping-wiki public-safe docs
 - Path: D:\agent-resources\skills\vipin\workstation-maintenance
 
+### project-hardness
+- What: Turn any project into an AI-readable, maintainable, verifiable causal layer under `<project>/.agent/` (architecture, glossary, constraints, modules, flows, entities, causal-graph, decisions, tasks), and harden vague requirements into concrete task specs (goal, modules, edit paths, risks, acceptance criteria, test commands). Engine lives in WEIPING_WIKI (`python scripts/wiki.py hardness`); facts stay project-local, only cross-project lessons sync to agentmemory
+- When: Starting work on an unfamiliar/large project, needing a change's blast radius or do-not-modify boundaries, or hardening a vague requirement before editing. Applies to every agent
+- Path: D:\agent-resources\skills\vipin\project-hardness
+
 ### lark-cli
 - What: Command-line interface for Lark platform operations
 - When: Automating Lark operations via CLI
@@ -838,6 +843,22 @@ Autonomous novel writing AI agent with multi-agent pipeline and web workbench.
 
 ---
 
+## Agency Agents (agency-agents-zh) — 215+ 中文专家子代理
+
+215+ 个即插即用的中文 AI 专家角色（工程/设计/营销/产品/游戏/安全/金融等 18 部门）。
+作为 Claude Code **子代理**安装，不是 skill。详见 [AGENCY-AGENTS.md](AGENCY-AGENTS.md)。
+
+### agency-agents
+- What: 211 个领域专家子代理（前端/后端/安全/DBA/SRE/UI/UX/小红书/抖音/跨境电商/政务/医疗合规/Qt 上位机 等），每个带独立人设、流程、交付物
+- When: 需要某个具体领域的专家视角时；用 `/<slug>` 调用（如 `/engineering-security-engineer`）或让主 agent 自动路由
+- 分层: T0 源仓库 / T0.5 slug 化无 BOM 暂存 / T1 ~30 精选常驻全局 / T2 按需灌入项目
+- 安装: `install-agency`（精选常驻）· `install-agency -Category <x>` · `install-agency -All -Project .`（按需）
+- 关键: 子代理 name 必须英文 slug，源仓库是中文 name，**勿直接复制原始文件**，必经暂存 slug 化
+- 源: D:\agent-resources\repos\agency-agents-zh  ·  暂存: D:\agent-resources\staging\agency-claude
+- 脚本: D:\devtools\agency-build-staging.ps1 · install-agency.ps1 · agency-fix-integration-bom.ps1
+
+---
+
 ## Quick Reference
 
 **For comprehensive harness**: ECC (232 skills + 60 agents at skills/ecc/)
@@ -861,3 +882,4 @@ Autonomous novel writing AI agent with multi-agent pipeline and web workbench.
 **For academic research**: academic-research-skills
 **For AI engineering curriculum**: ai-engineering-from-scratch
 **For personal AI assistant**: openhuman
+**For a domain-expert persona (211 roles)**: agency-agents — `/<slug>` e.g. `/engineering-security-engineer`; install via `install-agency`
