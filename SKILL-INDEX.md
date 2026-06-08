@@ -576,6 +576,21 @@ These are always-available MCP servers, not file-based skills. Any agent sharing
 
 Path: D:\agent-resources\skills\ecc\
 
+**Four-piece deployment (四件套, 2026-06-08):** ECC is wired into the agent family across four pillars — see `D:\devtools\AGENTS.md` for the per-agent matrix.
+- **Skills**: each agent's `skills\ecc` is now a **junction** to `D:\agent-resources\skills\ecc` (CC + Codex converted from drifted copies; old copies archived `*.prejxn`). Do NOT run ECC's `install-apply.js` against a live home — it does `copyFileSync` and re-creates drift; junction by hand instead.
+- **Intuition**: `D:\devtools\agent-hooks\ecc-observe.cmd` (node `observe-runner.js`, NOT `observe.sh`) wired additively into CC `settings.json`; default OFF via marker, toggle `ecc-intuition-toggle.cmd`. `CLV2_HOMUNCULUS_DIR=/d/devtools/data/derived/clv2-homunculus`, `CLAUDE_PLUGIN_ROOT=D:\agent-resources\repos\ECC` (full repo, has `scripts/`).
+- **Memory**: ECC homunculus is a derivation layer only → `data\derived\lessons\pending\ecc\` → promoted by `scripts\ingest-lessons.mjs`. agentmemory stays the single source.
+- **Security**: pinned `ecc-agentshield@1.4.0` at `D:\devtools\agent-tools\agentshield\`, run via `bin\agentshield-scan.cmd` (baseline-delta, nightly), never inlined into hooks.
+
+---
+
+## hermes-agent (family member, not a skill pack)
+
+NousResearch self-improving agent — ambient/background role (gateway, cron, lesson curation). Full independent Python agent, NOT a skill pack.
+- Source: `D:\devtools\vendor\hermes-agent`; venv + home: `D:\devtools\hermes` (Python 3.11); launcher: `D:\devtools\hermes.cmd` (pins `HERMES_HOME` to D-drive).
+- Model: gpt-5.5 relay (中转) via `hermes\config.yaml`. agentmemory MCP wired; native memory/session_search demoted. agentskills.io-compatible.
+- See `D:\devtools\AGENTS.md` for full wiring.
+
 ---
 
 ## Karpathy Guidelines
