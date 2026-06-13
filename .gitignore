@@ -34,3 +34,7 @@ skills/standalone/nuwa-skill/*.png
 skills/standalone/nuwa-skill/*.jpg
 skills/standalone/nuwa-skill/assets/*.gif
 skills/standalone/nuwa-skill/x-thread-en.md
+.gstack/
+
+# Original full skill pack (~48MB): keep only the curated subset above, not the archive.
+skills/standalone/nuwa-skill.zip
