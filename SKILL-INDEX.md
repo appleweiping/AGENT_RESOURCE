@@ -246,6 +246,11 @@ Specialized skills for workstation maintenance, Lark, communication, and content
 - When: Starting work on an unfamiliar/large project, needing a change's blast radius or do-not-modify boundaries, or hardening a vague requirement before editing. Applies to every agent
 - Path: D:\agent-resources\skills\vipin\project-hardness
 
+### literature-to-manga
+- What: Convert prose, novel, biography, history, or book-archive sources into manga adaptation packages with candidate scoring, source extraction, manga bibles, chapter/page/panel scripts, storyboard briefs, and image prompt packs
+- When: Selecting works from `D:\Company\anime\literature-books`, adapting local book files into comics or manga, ranking adaptation candidates, or generating character/scene/panel prompt packages from prose
+- Path: D:\agent-resources\skills\vipin\literature-to-manga
+
 ### lark-cli
 - What: Command-line interface for Lark platform operations
 - When: Automating Lark operations via CLI

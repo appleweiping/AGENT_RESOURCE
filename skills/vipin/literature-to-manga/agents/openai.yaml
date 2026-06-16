@@ -1,0 +1,4 @@
+interface:
+  display_name: "Literature To Manga"
+  short_description: "Turn prose archives into manga adaptation packages."
+  default_prompt: "Pick a book from my literature archive and create a manga adaptation package."
