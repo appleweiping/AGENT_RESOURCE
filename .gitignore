@@ -38,3 +38,12 @@ skills/standalone/nuwa-skill/x-thread-en.md
 
 # Original full skill pack (~48MB): keep only the curated subset above, not the archive.
 skills/standalone/nuwa-skill.zip
+
+# Curated huashu-design (花叔Design) subset: keep SKILL.md, LICENSE, READMEs,
+# references/, scripts/, demos/, and functional code assets; leave heavy
+# audio/screenshot media local-only (re-fetch from upstream if needed).
+skills/standalone/huashu-design/.git/
+skills/standalone/huashu-design/node_modules/
+skills/standalone/huashu-design/assets/bgm-*.mp3
+skills/standalone/huashu-design/assets/sfx/
+skills/standalone/huashu-design/assets/showcases/

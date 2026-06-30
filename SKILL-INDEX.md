@@ -489,6 +489,11 @@ Specialized single-purpose skills.
 - When: The user wants to create, update, or choose a person/topic perspective skill from an explicit name or a vague thinking/decision need.
 - Path: D:\agent-resources\skills\standalone\nuwa-skill
 
+### huashu-design
+- What: HTML-native design skill (花叔Design) — high-fidelity prototypes, interactive Demos, slide decks, motion/animation, design-variation exploration, plus a design-direction advisor and expert design review; embodies the matching expert (UX / animator / slide designer / prototyper).
+- When: User asks for UI/UX, prototype/mockup, slide deck/presentation, motion graphics/animation, infographic, or "explore a few design directions"; any visual or design-fidelity work in HTML.
+- Path: D:\agent-resources\skills\standalone\huashu-design
+
 ### colleague-skill
 - What: Colleague agent collaboration
 - When: Working with colleague agents
