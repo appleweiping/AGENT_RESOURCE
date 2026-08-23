@@ -132,4 +132,20 @@ if ($failures.Count -gt 0) {
     throw "Pre-push safety gate failed in $root"
 }
 
+$skillGate = Join-Path $root "tools/Test-SkillLibrary.ps1"
+if (-not (Test-Path -LiteralPath $skillGate -PathType Leaf)) {
+    throw "Missing skill library quality gate: $skillGate"
+}
+& $skillGate -Path $root
+
+$strictBase = "HEAD"
+foreach ($candidate in @('@{upstream}', 'origin/master', 'origin/main')) {
+    & git -C $root rev-parse --verify --quiet $candidate 2>$null | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        $strictBase = $candidate
+        break
+    }
+}
+& $skillGate -Path $root -ChangedFrom $strictBase -SkipTests
+
 Write-Host "Pre-push safety gate passed: $root" -ForegroundColor Green

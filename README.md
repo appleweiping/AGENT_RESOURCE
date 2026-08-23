@@ -35,7 +35,7 @@ This repository is designed to be public-safe. It should contain reusable instru
 | `slash-commands/` | Reusable command workflows and checklists. |
 | `references/` | Documentation, guides, and reusable source notes. |
 | `templates/` | Project and README templates. |
-| `tools/` | Small utility scripts. |
+| `tools/` | Discovery, validation, public-safety, and maintenance utilities. |
 
 `repos/` is intentionally ignored by Git. Keep full upstream clones and bulky mirrors local unless a small curated subset is deliberately promoted into `skills/`, `references/`, or `templates/`.
 
@@ -48,6 +48,19 @@ Agents should trigger skills from user intent, not only from exact skill names.
 3. Read the matched `SKILL.md`.
 4. Use bundled scripts/references when the skill provides them.
 5. Save useful routing lessons to agentmemory or durable docs.
+
+For deterministic discovery across the complete library, use the dependency-free catalog CLI:
+
+```powershell
+python .\tools\skill_catalog.py catalog
+python .\tools\skill_catalog.py search "debug failing tests"
+python .\tools\skill_catalog.py search "browser automation" --collection vipin --json
+python .\tools\skill_catalog.py validate
+```
+
+The validator checks the core constraints from the [Agent Skills specification](https://agentskills.io/specification): required frontmatter failures are blocking, while inherited compatibility debt such as non-kebab-case vendor names, duplicate names, invalid UTF-8, and oversized legacy manifests is reported as warnings. Use `--strict` for a fully conforming collection. Pull requests and direct pushes apply strict validation only to changed `SKILL.md` files, so upstream debt cannot grow while existing vendored packs remain usable. New branch and tag pushes compare against the remote default branch; an initial default-branch push with no baseline validates the complete library strictly. Relative-path pointer manifests used by vendored packs are resolved safely inside the repository on every platform.
+
+The architecture, upstream patterns, trust boundaries, and verification evidence are recorded in [Skill Library Quality Gate](docs/skill-library-quality-2026-08-23.md).
 
 Examples:
 
@@ -102,13 +115,15 @@ Treat matches as findings until reviewed. The history scan permits a small allow
 ## Smoke Tests
 
 ```powershell
+python .\tools\skill_catalog.py validate
+python -m unittest discover -s .\tools\tests -p "test_*.py"
 powershell .\tools\Test-ImplicitSkillRouting.ps1
 powershell .\tools\Test-PublicSafety.ps1
 powershell .\tools\Test-HistorySafety.ps1
 powershell .\tools\Test-PrePushSafety.ps1
 ```
 
-This checks that `SKILL-INDEX.md` and committed `SKILL.md` frontmatter expose enough intent metadata for passive skill triggering.
+These checks validate portable skill metadata, deterministic intent search, public-safety boundaries, Git history, and passive routing metadata. GitHub Actions runs the portable validation and safety subset on every push and pull request with read-only permissions and SHA-pinned actions.
 
 ## Related Projects
 

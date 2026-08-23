@@ -14,7 +14,49 @@ $allowedPlaceholders = @(
 
 Push-Location $resolved
 try {
-    $raw = @(rg -n -I --pcre2 --with-filename --no-heading $pattern . 2>$null)
+    $ripgrep = Get-Command rg -ErrorAction SilentlyContinue
+    if ($null -ne $ripgrep) {
+        $raw = @(& $ripgrep.Source -n -I --pcre2 --with-filename --no-heading $pattern . 2>$null)
+        if ($LASTEXITCODE -notin @(0, 1)) {
+            throw "ripgrep public-safety scan failed in $resolved"
+        }
+    } else {
+        & git -C $resolved rev-parse --is-inside-work-tree 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "ripgrep is unavailable and $resolved is not a Git worktree"
+        }
+
+        $raw = @(& git -C $resolved -c core.quotePath=false grep -n -I -E -e $pattern -- . 2>$null)
+        if ($LASTEXITCODE -notin @(0, 1)) {
+            throw "git grep public-safety scan failed in $resolved"
+        }
+
+        $untracked = @(& git -C $resolved -c core.quotePath=false ls-files --others --exclude-standard 2>$null)
+        if ($LASTEXITCODE -ne 0) {
+            throw "cannot enumerate untracked files in $resolved"
+        }
+        foreach ($relative in $untracked) {
+            $full = Join-Path $resolved ($relative -replace '/', [System.IO.Path]::DirectorySeparatorChar)
+            if (-not (Test-Path -LiteralPath $full -PathType Leaf)) {
+                continue
+            }
+            $item = Get-Item -LiteralPath $full
+            if ($item.Length -gt 5MB) {
+                continue
+            }
+            try {
+                $text = Get-Content -LiteralPath $full -Raw -ErrorAction Stop
+            } catch {
+                continue
+            }
+            if ($null -eq $text) {
+                continue
+            }
+            foreach ($match in [regex]::Matches($text, $pattern)) {
+                $raw += "${relative}:$($match.Value)"
+            }
+        }
+    }
     $hits = @()
     foreach ($line in $raw) {
         foreach ($match in [regex]::Matches($line, $pattern)) {

@@ -24,6 +24,8 @@ The shared `vipin/workstation-maintenance` skill owns physical C:/D:/G: organiza
 Before commit or push:
 
 ```powershell
+python .\tools\skill_catalog.py validate
+python -m unittest discover -s .\tools\tests -p "test_*.py"
 powershell .\tools\Test-ImplicitSkillRouting.ps1
 powershell .\tools\Test-PublicSafety.ps1
 powershell .\tools\Test-HistorySafety.ps1
