@@ -1,0 +1,18 @@
+[submodule "skills/graphify"]
+	path = skills/graphify
+	url = https://github.com/safishamsi/graphify.git
+[submodule "skills/standalone/anbeime-skill"]
+	path = skills/standalone/anbeime-skill
+	url = https://github.com/anbeime/skill.git
+[submodule "skills/standalone/colleague-skill"]
+	path = skills/standalone/colleague-skill
+	url = https://github.com/titanwings/colleague-skill.git
+[submodule "skills/standalone/darwin-skill"]
+	path = skills/standalone/darwin-skill
+	url = https://github.com/alchaincyf/darwin-skill.git
+[submodule "skills/standalone/gstack"]
+	path = skills/standalone/gstack
+	url = https://github.com/garrytan/gstack.git
+[submodule "skills/standalone/mattpocock-skills"]
+	path = skills/standalone/mattpocock-skills
+	url = https://github.com/mattpocock/skills.git
