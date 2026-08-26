@@ -23,7 +23,9 @@ class RepositoryIntegrityTests(unittest.TestCase):
             return
 
         manifest = root / ".gitmodules"
-        self.assertTrue(manifest.is_file(), "gitlinks require a committed .gitmodules file")
+        self.assertTrue(
+            manifest.is_file(), "gitlinks require a committed .gitmodules file"
+        )
 
         parser = configparser.ConfigParser(interpolation=None)
         parser.read(manifest, encoding="utf-8")
@@ -36,7 +38,9 @@ class RepositoryIntegrityTests(unittest.TestCase):
             if path:
                 mappings[path] = url
 
-        self.assertEqual(gitlinks, set(mappings), "gitlink and .gitmodules paths differ")
+        self.assertEqual(
+            gitlinks, set(mappings), "gitlink and .gitmodules paths differ"
+        )
         for path, url in mappings.items():
             with self.subTest(path=path):
                 self.assertRegex(url, r"^https://github\.com/[^/]+/[^/]+\.git$")
