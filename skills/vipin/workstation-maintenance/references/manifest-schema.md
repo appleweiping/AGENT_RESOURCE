@@ -6,8 +6,11 @@ Inventory manifests are JSON files with a top-level object:
 {
   "schema_version": "1.0",
   "generated_at": "2026-06-01T18:54:07.0000000+02:00",
-  "roots": ["C:\\", "D:\\"],
-  "target_root": "D:\\_Organized",
+  "mode": "Live",
+  "config_path": "<skill folder>\\config.json",
+  "roots": ["<inventory root>"],
+  "target_root": "<organized_root>",
+  "protected_roots": ["<protected root>"],
   "items": []
 }
 ```
@@ -17,7 +20,7 @@ Each item uses these fields:
 - `id`: stable manifest-local ID, e.g. `wm_000001`.
 - `path`: original literal path.
 - `resolved_path`: canonical path used for boundary checks.
-- `drive`: drive name such as `C:` or `D:`.
+- `drive`: drive name, for example `C:`.
 - `kind`: `file`, `directory`, `reparse`, `missing`, or `other`.
 - `size`: file size in bytes when available.
 - `mtime`: last write time in ISO format.
@@ -27,7 +30,7 @@ Each item uses these fields:
 - `category`: one of the skill categories.
 - `risk_tier`: `protected`, `high`, `medium`, `low`, or `review`.
 - `move_eligible`: Boolean.
-- `proposed_destination`: destination under `D:\_Organized` when eligible.
+- `proposed_destination`: destination under the target root when eligible.
 - `reason`: short classification reason.
 - `rollback_source`: destination path after a move.
 - `rollback_destination`: original source path for rollback.
@@ -53,6 +56,8 @@ Move plans group eligible items into batches:
 
 Move plans also include:
 
+- `mode` and `protected_roots`, copied from the inventory manifest. The executors check
+  these and the current config's `protected_roots`.
 - `minimum_age_days`: default `30` for live manifests.
 - `max_items_per_batch`: default `100` for approval-friendly batches.
 - `deferred_count`
@@ -67,6 +72,7 @@ Applied manifests record:
 - `move_plan_path`
 - `batch_id`
 - `target_root`
+- `protected_roots`
 - `items`
 - `rollback_command`
 
@@ -113,6 +119,7 @@ Drive-root organization plans record immediate children of a drive root:
 - `drive_root`
 - `target_root`
 - `excluded_names`
+- `protected_roots`, `infrastructure_roots`, `project_roots`: the config values used
 - `item_count`
 - `move_count`
 - `record_only_count`
@@ -128,7 +135,7 @@ Drive-root items record:
 - `category`
 - `risk_tier`
 - `action`: `move-with-junction` or `record-only`
-- `target_path`: destination under `D:\_Organized\<Bucket>\_RootDirs\` when actionable
+- `target_path`: destination under `<drive>\_Organized\<Bucket>\_RootDirs\` when actionable
 - `junction_path`: original root path to preserve as an NTFS junction
 - `reason`
 
@@ -144,4 +151,4 @@ Drive-root applied manifests record:
 
 Drive-root applied items may include `already_completed` when a resume run counted an existing expected junction instead of moving it again, and `repaired_missing_junction` when a previous partial run had already moved the target but failed before recreating the source junction.
 
-Do not commit `.wiki-tmp/workstation-maintenance` manifests unless the user explicitly requests a local evidence archive. They can contain private filenames.
+Do not commit inventory, plan, or applied manifests. They contain private filenames.

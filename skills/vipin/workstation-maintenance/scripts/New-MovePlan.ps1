@@ -2,25 +2,15 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ManifestPath,
     [string]$OutputDir = "",
-    [string]$TargetRoot = "D:\_Organized",
+    [string]$TargetRoot = "",
+    [string]$ConfigPath = "",
     [int]$MinimumAgeDays = 30,
     [int]$MaxItemsPerBatch = 100
 )
 
 $ErrorActionPreference = "Stop"
 
-function Get-FullPathSafe {
-    param([string]$Path)
-    try { return [System.IO.Path]::GetFullPath($Path) } catch { return $Path }
-}
-
-function Test-PathUnder {
-    param([string]$Path, [string]$Root)
-    $full = (Get-FullPathSafe $Path).TrimEnd('\')
-    $base = (Get-FullPathSafe $Root).TrimEnd('\')
-    return $full.Equals($base, [System.StringComparison]::OrdinalIgnoreCase) -or
-        $full.StartsWith($base + "\", [System.StringComparison]::OrdinalIgnoreCase)
-}
+. (Join-Path $PSScriptRoot "WorkstationConfig.ps1")
 
 function Get-SafeBatchName {
     param([string]$Text)
@@ -103,6 +93,13 @@ if (-not (Test-Path -LiteralPath $manifestFull -PathType Leaf)) {
 }
 
 $manifest = Get-Content -LiteralPath $manifestFull -Raw | ConvertFrom-Json
+if (-not $TargetRoot) { $TargetRoot = [string]$manifest.target_root }
+if (-not $TargetRoot) {
+    throw "Manifest has no target_root; pass -TargetRoot."
+}
+# Protected roots recorded at inventory time, plus whatever the config lists now.
+$config = Get-WorkstationConfig -ConfigPath $ConfigPath
+$ProtectedRoots = @(@(Get-PlanList $manifest "protected_roots") + @($config.protected_roots) | Sort-Object -Unique)
 if (-not $OutputDir) {
     $OutputDir = Split-Path -Parent $manifestFull
 }
@@ -149,8 +146,8 @@ $batchCandidates | Group-Object { Get-MoveSubcategory $_ } | Sort-Object Name | 
     $firstItem = $batchItems | Select-Object -First 1
     $category = [string]$firstItem.category
     foreach ($item in $batchItems) {
-        if (Test-PathUnder $item.resolved_path "D:\Research") {
-            throw "Move plan attempted to include D:\Research item: $($item.resolved_path)"
+        if ((Test-PathUnderAny $item.resolved_path $ProtectedRoots) -or (Test-PathUnderAny $item.path $ProtectedRoots)) {
+            throw "Move plan attempted to include an item under a protected root: $($item.resolved_path)"
         }
         if ($item.kind -ne "file") {
             throw "Move plan attempted to include non-file item: $($item.id)"
@@ -160,6 +157,9 @@ $batchCandidates | Group-Object { Get-MoveSubcategory $_ } | Sort-Object Name | 
         }
         if (-not (Test-PathUnder $item.proposed_destination $TargetRoot)) {
             throw "Destination outside target root for $($item.id): $($item.proposed_destination)"
+        }
+        if (Test-PathUnderAny $item.proposed_destination $ProtectedRoots) {
+            throw "Destination under a protected root for $($item.id): $($item.proposed_destination)"
         }
     }
     $partCount = [Math]::Ceiling($batchItems.Count / [double]$MaxItemsPerBatch)
@@ -202,7 +202,9 @@ $mdPath = Join-Path $out "workstation-move-plan-$stamp.md"
 $plan = [ordered]@{
     generated_at = (Get-Date).ToString("o")
     manifest_path = $manifestFull
+    mode = [string]$manifest.mode
     target_root = $TargetRoot
+    protected_roots = @($ProtectedRoots)
     minimum_age_days = $effectiveMinimumAgeDays
     max_items_per_batch = $MaxItemsPerBatch
     batch_count = $batches.Count

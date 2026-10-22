@@ -1,104 +1,109 @@
 # Batch Move Workflow
 
-This reference covers file-level cleanup batches. For immediate D-drive root directory organization, use the drive-root commands at the end of this file.
+This covers file-level cleanup batches. Drive-root folder organization is at the end.
+Commands run from the skill folder.
 
-## Dry Run
+## Dry run
 
-1. Generate inventory.
-2. Generate move plan.
-   - Default executable batches require candidates to be older than 30 days.
-   - Recent candidates are recorded as deferred review items, not executable batches.
-   - Executable candidates are grouped by file type and split into parts of at most 100 items by default.
-3. Verify protected counts:
-   - `D:\Research` entries: 0.
-   - move-eligible reparse points: 0.
-   - move-eligible directories: 0.
-   - move-eligible git worktrees: 0.
-   - recent items in executable batches: 0, unless the user explicitly requested a lower age gate.
+1. Generate the inventory.
+2. Generate the move plan.
+   - Executable batches only contain files older than 30 days by default.
+   - Newer candidates are recorded as deferred review items, not executable batches.
+   - Candidates are grouped by file type and split into parts of at most 100 items.
+3. Check the counts:
+   - entries under protected roots: 0
+   - move-eligible reparse points: 0
+   - move-eligible directories: 0
+   - move-eligible git worktree files: 0
+   - recent items in executable batches: 0, unless the user asked for a lower age gate
 
 ## Approval
 
-Generate a local approval packet:
+Write a local approval packet:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\New-ApprovalPacket.ps1" -MovePlanPath "<move-plan.json>" -PreflightSummaryPath "<preflight-summary.json>"
+.\scripts\New-ApprovalPacket.ps1 -MovePlanPath "<move-plan.json>" -PreflightSummaryPath "<preflight-summary.json>"
 ```
 
-The packet writes Markdown and JSON summaries with batch IDs, bucket-level counts, safety checks, and execution templates. It intentionally omits private filenames.
+The packet has Markdown and JSON summaries with batch IDs, bucket-level counts, safety
+checks, and ready-to-paste commands. It leaves out filenames.
 
-Present only batch summaries:
+Show the user only batch summaries:
 
-- batch ID
-- category
-- subcategory
-- part number
-- item count
-- total size
+- batch ID, category, subcategory and part number
+- item count and total size
 - destination root
-- risk tier
-- minimum age gate
-- maximum items per batch
+- risk tier, minimum age gate and maximum items per batch
 - deferred recent item count
 
-Do not show private filenames in public wiki pages. The user may inspect the local JSON/Markdown manifest directly.
+The user can open the local JSON/Markdown plan to see individual files.
 
-If the user grants broad approval for the current low-risk plan, do not ask for per-batch confirmation. Rerun the full non-moving preflight and execute every passing batch, stopping immediately on the first failure.
+If the user approves the whole current low-risk plan, do not ask again for each batch.
+Rerun the full preflight and execute every passing batch, stopping at the first failure.
 
 ## Execution
 
-Optional non-moving preflight for a specific batch:
+Preflight one batch without moving anything:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-ApprovedMoveBatch.ps1" -MovePlanPath "<move-plan.json>" -BatchId "<batch-id>" -PreflightOnly
+.\scripts\Invoke-ApprovedMoveBatch.ps1 -MovePlanPath "<move-plan.json>" -BatchId "<batch-id>" -PreflightOnly
 ```
 
-Preflight writes a local `workstation-preflight-*.json` manifest and does not create destination directories or move files.
+This writes `workstation-preflight-*.json` and does not create folders or move files.
 
-To preflight every batch in a move plan:
+Preflight every batch in a plan:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Test-MovePlanBatches.ps1" -MovePlanPath "<move-plan.json>"
+.\scripts\Test-MovePlanBatches.ps1 -MovePlanPath "<move-plan.json>"
 ```
 
-This writes `workstation-preflight-summary-*.json` plus per-batch preflight manifests under the output directory.
+This writes `workstation-preflight-summary-*.json` plus one preflight manifest per batch.
 
-Run:
+Move an approved batch:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-ApprovedMoveBatch.ps1" -MovePlanPath "<move-plan.json>" -BatchId "<batch-id>" -Approved
+.\scripts\Invoke-ApprovedMoveBatch.ps1 -MovePlanPath "<move-plan.json>" -BatchId "<batch-id>" -Approved
 ```
 
-The script preflights all items before moving. It stops if any destination already exists, a source is missing, a source is under `D:\Research`, a source is a reparse point, a source is a directory, or a source belongs to a git worktree.
+The script checks every item before moving any. It stops if a destination already
+exists, a source is missing, a source or destination is under a protected root, a
+source is a reparse point or a directory, or a source belongs to a git worktree.
 
-For broad approval, repeat the approved command for each preflight-passing batch in the move plan and write a local applied summary with the per-batch applied manifest paths. Do not skip the post-move verification: moved destinations must exist, original sources should be absent, and applied paths must not include `D:\Research`.
+After a broad approval, run the approved command for each passing batch and keep a
+local list of the applied manifest paths. Then check that moved files exist at their
+destinations and are gone from their sources.
 
-Move plans must produce unique destination paths. If two source files would land on the same target path, `New-MovePlan.ps1` appends a stable manifest item suffix before execution. `Invoke-ApprovedMoveBatch.ps1` also rejects duplicate destinations before moving anything.
+Move plans always have unique destinations. If two files would land on the same path,
+`New-MovePlan.ps1` appends the item ID; `Invoke-ApprovedMoveBatch.ps1` also rejects
+duplicate destinations before moving anything.
 
 ## Rollback
 
-Run:
-
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-RollbackBatch.ps1" -AppliedManifestPath "<applied-batch.json>"
+.\scripts\Invoke-RollbackBatch.ps1 -AppliedManifestPath "<applied-batch.json>"
 ```
 
-Rollback is also preflighted. If a rollback destination already exists, the script stops instead of overwriting.
+Rollback is checked first too. If a file already exists at the original path, it stops
+instead of overwriting.
 
-## D-Drive Root Directory Plan
+## Drive-root folder plan
 
-Use this when the task is to organize immediate `D:\` root directories into clear buckets without breaking old absolute paths.
+Use this to sort the top-level folders of one drive into buckets without breaking
+existing absolute paths.
 
 ```powershell
-$out = "D:\Research\vipin's knowledgebase\.wiki-tmp\workstation-maintenance"
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\New-DriveRootOrganizationPlan.ps1" -DriveRoot "D:\" -OutputDir $out
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-DriveRootOrganizationPlan.ps1" -PlanPath "<d-drive-root-plan.json>" -PreflightOnly
-& "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-DriveRootOrganizationPlan.ps1" -PlanPath "<d-drive-root-plan.json>" -Approved -SkipIds @("dr_0016","dr_0041")
+$out = Join-Path $env:TEMP "workstation-maintenance"
+.\scripts\New-DriveRootOrganizationPlan.ps1 -DriveRoot "<drive>" -OutputDir $out
+.\scripts\Invoke-DriveRootOrganizationPlan.ps1 -PlanPath "<drive-root-plan.json>" -PreflightOnly
+.\scripts\Invoke-DriveRootOrganizationPlan.ps1 -PlanPath "<drive-root-plan.json>" -Approved -SkipIds @("dr_0016","dr_0041")
 ```
 
-The drive-root executor moves actual data into `D:\_Organized\<Bucket>\_RootDirs\...` and creates an NTFS junction at the old root path. If a directory is locked or access is denied, do not force a partial move; rerun with that item in `-SkipIds` and record it as a classified exception in the wiki.
+The executor moves each folder into `<drive>\_Organized\<Bucket>\_RootDirs\` and creates
+an NTFS junction at the old path. If a folder is locked or access is denied, do not force
+a partial move; rerun with its ID in `-SkipIds` and report it.
 
 Rollback:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-DriveRootOrganizationPlan.ps1" -PlanPath "<d-drive-root-plan.json>" -RollbackManifestPath "<d-drive-root-applied.json>"
+.\scripts\Invoke-DriveRootOrganizationPlan.ps1 -PlanPath "<drive-root-plan.json>" -RollbackManifestPath "<drive-root-applied.json>"
 ```

@@ -1,61 +1,63 @@
 # Safety Boundaries
 
-## Absolute No-Move Roots
+## Never moved
 
-- `D:\Research` and every resolved path beneath it.
-- Windows system roots: `C:\Windows`, `C:\Program Files`, `C:\Program Files (x86)`, `C:\ProgramData`.
-- User runtime roots: `AppData`, browser profiles, package caches, auth/session/db/log directories.
+- Every `protected_roots` entry in `config.json` and every resolved path beneath it.
+  These are also left out of inventories entirely.
+- The Windows folder, Program Files, Program Files (x86) and ProgramData.
+- AppData, browser profiles, package caches, and auth/session/db/log folders.
 - Active git worktrees.
-- Reparse points, junctions, symlinks, and their targets.
+- Reparse points (junctions, symlinks) and their targets.
 
-## Default D-Drive No-Move Roots
+## Kept in place by default
 
-These roots are important routing records. Keep them in place unless the user approves a dedicated project-specific migration:
+`infrastructure_roots` and `project_roots` from the config, plus the agent folders in
+the user profile (`.codex`, `.claude`, `.openhands`, opencode state), are recorded in
+inventories and plans but never moved. Move one only when the user asks for a
+migration of that specific folder.
 
-- `D:\devtools`
-- `D:\AGENT_RESOURCE`
-- `D:\agent-resources`
-- `D:\AGENTIC_SCIENCE`
-- `D:\devtools-public`
-- `D:\DELVTOOLS_PUBLIC`
-- `D:\Company`
-- `D:\Project`
-- `D:\Healthcare`
-- `D:\Game_develop`
-- `D:\frontend`
-- `D:\WeipingYan_portfolio`
+## Sensitive content
 
-## Sensitive Content
+Classify sensitive candidates by path and filename only. Do not open documents. In
+anything that leaves the machine (chat logs, notes, commits), record only bucket-level
+counts and the rules that were applied.
 
-Classify sensitive candidates by path and filename only. Do not open document contents. In public wiki pages, record only bucket-level summaries and safety rules.
+Sensitive name patterns include medical, health, bank, finance, tax, passport, visa,
+insurance, application, contract, offer, resume, CV, identity, credential, secret, key,
+token, and private.
 
-Sensitive patterns include medical, health, bank, finance, tax, passport, visa, insurance, application, contract, offer, resume, CV, identity, credential, secret, key, token, and private.
+## Move preconditions
 
-## Move Preconditions
-
-File-level physical moves require all of the following:
+File-level moves need all of these:
 
 1. A dry-run inventory manifest.
 2. A move plan generated from that manifest.
-3. A batch ID explicitly approved by the user.
-4. A preflight check that sources still exist, destinations are under the approved target root, and no source is a protected path, reparse point, directory, or active git worktree.
-5. A normal-use safety gate: live move plans default to candidates older than 30 days; recent files are deferred unless the user explicitly approves a lower age threshold.
+3. A batch ID the user approved.
+4. A preflight showing that sources still exist, destinations are under the target
+   root, and no source or destination is under a protected root, a reparse point, a
+   directory, or inside a git worktree. The executors check the protected roots recorded
+   in the plan and the ones in the current config, so editing a plan cannot unprotect a folder.
+5. An age gate: live plans default to files older than 30 days; newer files are deferred
+   unless the user approves a lower threshold.
 6. An applied manifest with rollback source and destination for every moved item.
 
-`Invoke-ApprovedMoveBatch.ps1 -PreflightOnly` may be run before approval because it performs checks and writes a preflight manifest without moving files.
+`Invoke-ApprovedMoveBatch.ps1 -PreflightOnly` may run before approval; it checks and
+writes a preflight manifest without moving anything.
 
-## D-Drive Root Directory Organization
+## Drive-root organization
 
 Directory-level root organization is a separate workflow from file-level cleanup.
 
-- Use `New-DriveRootOrganizationPlan.ps1` to classify immediate `D:\` children only.
-- Move eligible root directories under `D:\_Organized\<Bucket>\_RootDirs\`.
-- Leave a junction at the original root path so existing absolute paths keep working.
-- Do not recurse into or move `D:\Research`, `D:\AGENT_RESOURCE`, `D:\agent-resources`, `D:\AGENTIC_SCIENCE`, `D:\devtools`, `D:\devtools-public`, `D:\DELVTOOLS_PUBLIC`, or `D:\_Organized`.
-- Treat active roots such as `D:\Company`, `D:\Project`, `D:\Healthcare`, `D:\Game_develop`, `D:\frontend`, and `D:\WeipingYan_portfolio` as record-only unless the user explicitly requests a project-specific migration.
-- Run `Invoke-DriveRootOrganizationPlan.ps1 -PreflightOnly` before approved execution.
-- If Windows denies a root because of ACLs or active process locks, pass its manifest ID through `-SkipIds`, record it as a classified exception, and retry only after the lock is resolved.
+- `New-DriveRootOrganizationPlan.ps1` classifies the immediate children of one drive root.
+- Eligible folders move to `<drive>\_Organized\<Bucket>\_RootDirs\`, with a junction
+  left at the original path.
+- A folder that is, sits inside, or contains a protected, infrastructure or project root
+  is never moved, and neither is `_Organized` itself.
+- Run `Invoke-DriveRootOrganizationPlan.ps1 -PreflightOnly` before the approved run.
+- If Windows denies a folder because of ACLs or open handles, pass its ID through
+  `-SkipIds`, report it, and retry after the lock is gone.
 
-## Delete Policy
+## Delete policy
 
-This skill never deletes user files. Cleanup can produce deletion candidates, but deletion requires a separate explicit approval flow.
+This skill never deletes user files. Cleanup can produce deletion candidates, but
+deleting them needs a separate, explicit approval from the user.

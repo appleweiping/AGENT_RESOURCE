@@ -1,25 +1,29 @@
 param(
-    [string]$DriveRoot = "D:\",
+    [Parameter(Mandatory = $true)]
+    [string]$DriveRoot,
     [string]$OutputDir = "",
-    [string]$TargetRoot = "D:\_Organized",
-    [string[]]$ExcludeNames = @("Research", "AGENT_RESOURCE", "agent-resources", "AGENTIC_SCIENCE", "devtools", "devtools-public", "DELVTOOLS_PUBLIC", "_Organized")
+    [string]$TargetRoot = "",
+    [string[]]$ExcludeNames = @(),
+    [string]$ConfigPath = ""
 )
 
 $ErrorActionPreference = "Stop"
-$HardProtectedRootNames = @("Research", "AGENT_RESOURCE", "agent-resources", "AGENTIC_SCIENCE", "devtools", "devtools-public", "DELVTOOLS_PUBLIC", "_Organized")
+. (Join-Path $PSScriptRoot "WorkstationConfig.ps1")
 
-function Get-FullPathSafe {
-    param([string]$Path)
-    try { return [System.IO.Path]::GetFullPath($Path) } catch { return $Path }
-}
+$config = Get-WorkstationConfig -ConfigPath $ConfigPath -Required
+$ProtectedRoots = @($config.protected_roots)
+$InfrastructureRoots = @($config.infrastructure_roots)
+$ProjectRoots = @($config.project_roots)
+$SystemRoots = @(Get-SystemRoots)
 
-function Test-PathUnder {
-    param([string]$Path, [string]$Root)
-    if (-not $Path) { return $false }
-    $full = (Get-FullPathSafe $Path).TrimEnd('\')
-    $base = (Get-FullPathSafe $Root).TrimEnd('\')
-    return $full.Equals($base, [System.StringComparison]::OrdinalIgnoreCase) -or
-        $full.StartsWith($base + "\", [System.StringComparison]::OrdinalIgnoreCase)
+function Test-OverlapsAny {
+    # True when the folder is inside one of the roots or contains one of them.
+    param([string]$Path, [string[]]$Roots)
+    foreach ($root in @($Roots)) {
+        if (-not $root) { continue }
+        if ((Test-PathUnder $Path $root) -or (Test-PathUnder $root $Path)) { return $true }
+    }
+    return $false
 }
 
 function Get-SafeName {
@@ -35,7 +39,6 @@ function New-StringFromCodePoints {
 }
 
 $HiFormatRecording = New-StringFromCodePoints @(0x55E8, 0x683C, 0x5F0F, 0x5F55, 0x5C4F, 0x6587, 0x4EF6)
-$LoveName = New-StringFromCodePoints @(0x7231)
 $Browser360Download = "360" + (New-StringFromCodePoints @(0x5B89, 0x5168, 0x6D4F, 0x89C8, 0x5668, 0x4E0B, 0x8F7D))
 $XunleiDownload = New-StringFromCodePoints @(0x8FC5, 0x96F7, 0x4E0B, 0x8F7D)
 $XunleiCloud = New-StringFromCodePoints @(0x8FC5, 0x96F7, 0x4E91, 0x76D8)
@@ -70,52 +73,57 @@ function Get-RootClassification {
     param($Item)
     $name = [string]$Item.Name
     $lower = $name.ToLowerInvariant()
+    $full = Get-FullPathSafe $Item.FullName
 
-    if (($ExcludeNames + $HardProtectedRootNames) | Where-Object { $_.Equals($name, [System.StringComparison]::OrdinalIgnoreCase) }) {
+    if ($name -eq "_Organized" -or ($ExcludeNames | Where-Object { $_.Equals($name, [System.StringComparison]::OrdinalIgnoreCase) })) {
         return @("Protected-NoMove", "protected", "excluded root")
     }
+    if (Test-OverlapsAny $full $ProtectedRoots) {
+        return @("Protected-NoMove", "protected", "protected root from config")
+    }
     if ($name -in @('$RECYCLE.BIN', 'System Volume Information', 'OneDriveTemp') -or
-        $lower -in @('program files', 'docker', 'virtualbox') -or
-        $lower -match '^(pagefile\.sys|dumpstack\.log\.tmp)$') {
+        $lower -in @('program files', 'program files (x86)', 'programdata', 'windows', 'docker', 'virtualbox') -or
+        $lower -match '^(pagefile\.sys|swapfile\.sys|hiberfil\.sys|dumpstack\.log\.tmp)$' -or
+        (Test-OverlapsAny $full $SystemRoots)) {
         return @("Protected-NoMove", "protected", "system/vendor runtime root")
     }
-    if ($lower -in @('.claude', 'devtools', 'devtools-public', 'delvtools_public', 'agent_resource', 'agent-resources', 'agentic_science') -or
-        $lower -match '^\.pnpm-store$') {
+    if ((Test-OverlapsAny $full $InfrastructureRoots) -or $lower -in @('.claude', '.codex', '.pnpm-store')) {
         return @("AgentInfrastructure", "high", "agent/tool infrastructure")
     }
-    if ($lower -in @('company', 'project', 'healthcare', 'game_develop', 'frontend', 'idea', 'weipingyan_portfolio')) {
-        return @("ActiveProject", "high", "known active project root")
+    if (Test-OverlapsAny $full $ProjectRoots) {
+        return @("ActiveProject", "high", "project root from config")
     }
-    if ($lower -match '^(academic_portfolio)$') {
-        return @("Documents-Private", "medium", "sensitive archive root")
+    foreach ($rule in @($config.drive_root_rules)) {
+        if ($name -match $rule.pattern) {
+            $risk = if ($DriveRootMovableCategories.Contains($rule.category)) { $DriveRootMovableCategories[$rule.category] } else { $DriveRootRecordOnlyCategories[$rule.category] }
+            return @($rule.category, $risk, $rule.reason)
+        }
     }
+    # Default folder names of common Windows apps.
     if ($lower -eq $WeChatRoot) {
         return @("Documents-Private", "high", "personal messaging data root")
-    }
-    if ($lower -match '^(undergraduate_|tuelearning$|cs project$)') {
-        return @("Coursework", "medium", "coursework/archive root")
-    }
-    if ($lower -in @('terraria_doc', 'girlvania')) {
-        return @("Games", "medium", "game/archive root")
-    }
-    if ($lower -in @('video creation', $HiFormatRecording, $LoveName)) {
-        return @("Media", "medium", "media/personal asset root")
     }
     if ($lower -in @('360downloads', $Browser360Download, 'baidunetdiskdownload', $XunleiDownload, $XunleiCloud, $TencentMigration)) {
         return @("Downloads", "low", "download/migration root")
     }
-    if ($lower -match '^(temp|tmp|tempappleweiping-site|codex-chrome-automation-profile-.+)$') {
+    if ($lower -eq $HiFormatRecording) {
+        return @("Media", "medium", "screen recording root")
+    }
+    if ($lower -match '^(temp|tmp)$') {
         return @("Temp-Review", "low", "temporary/scratch root")
     }
     if ($lower -match '^(auntecpkg_|lenovo|flashcenter|drivers|androwsdata|mailmasterdata)') {
         return @("Tools-Review", "medium", "legacy vendor/tool/app-data root")
     }
-    return @("UnknownReview", "review", "unclassified D-root item")
+    return @("UnknownReview", "review", "unclassified drive-root item")
 }
 
 $driveFull = (Get-FullPathSafe $DriveRoot).TrimEnd('\') + "\"
 if (-not (Test-Path -LiteralPath $driveFull -PathType Container)) {
     throw "Drive root not found: $driveFull"
+}
+if (-not $TargetRoot) {
+    $TargetRoot = Join-Path $driveFull "_Organized"
 }
 if (-not $OutputDir) {
     $OutputDir = Join-Path $TargetRoot "_Plans"
@@ -155,7 +163,7 @@ Get-ChildItem -LiteralPath $driveFull -Force | Sort-Object Name | ForEach-Object
     $reason = $classification[2]
     $action = "record-only"
     $targetPath = $null
-    if ($kind -eq "directory" -and -not $isReparse -and $category -in @("Downloads", "Media", "Coursework", "Documents-Private", "Games", "Temp-Review", "Tools-Review")) {
+    if ($kind -eq "directory" -and -not $isReparse -and $DriveRootMovableCategories.Contains($category)) {
         $action = "move-with-junction"
         $desired = Join-Path (Join-Path (Join-Path $targetFull $category) "_RootDirs") (Get-SafeName $_.Name)
         $targetPath = Get-UniqueDirectory -DesiredPath $desired -Used $usedTargets
@@ -177,8 +185,8 @@ Get-ChildItem -LiteralPath $driveFull -Force | Sort-Object Name | ForEach-Object
 }
 
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$jsonPath = Join-Path $out "d-drive-root-organization-plan-$stamp.json"
-$mdPath = Join-Path $out "d-drive-root-organization-plan-$stamp.md"
+$jsonPath = Join-Path $out "drive-root-organization-plan-$stamp.json"
+$mdPath = Join-Path $out "drive-root-organization-plan-$stamp.md"
 $moveItems = @($items | Where-Object { $_.action -eq "move-with-junction" })
 $recordItems = @($items | Where-Object { $_.action -ne "move-with-junction" })
 
@@ -187,7 +195,10 @@ $plan = [ordered]@{
     generated_at = (Get-Date).ToString("o")
     drive_root = $driveFull
     target_root = $targetFull
-    excluded_names = $ExcludeNames
+    excluded_names = @($ExcludeNames)
+    protected_roots = @($ProtectedRoots)
+    infrastructure_roots = @($InfrastructureRoots)
+    project_roots = @($ProjectRoots)
     item_count = $items.Count
     move_count = $moveItems.Count
     record_only_count = $recordItems.Count
@@ -196,11 +207,11 @@ $plan = [ordered]@{
 $plan | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $jsonPath -Encoding UTF8
 
 $lines = [System.Collections.Generic.List[string]]::new()
-$lines.Add("# D-Drive Root Organization Plan")
+$lines.Add("# Drive Root Organization Plan")
 $lines.Add("")
 $lines.Add("Generated: $((Get-Date).ToString('o'))")
 $lines.Add("")
-$lines.Add("Move-with-junction entries move actual data under `D:\_Organized` and leave the old root path as a junction.")
+$lines.Add("Move-with-junction entries move the folder under ``$targetFull`` and leave a junction at the old path.")
 $lines.Add("")
 $lines.Add("| ID | Name | Category | Action | Target | Reason |")
 $lines.Add("| --- | --- | --- | --- | --- | --- |")

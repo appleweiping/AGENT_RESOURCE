@@ -2,15 +2,13 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$MovePlanPath,
     [string]$OutputDir = "",
-    [switch]$StopOnFailure
+    [switch]$StopOnFailure,
+    [string]$ConfigPath = ""
 )
 
 $ErrorActionPreference = "Stop"
 
-function Get-FullPathSafe {
-    param([string]$Path)
-    try { return [System.IO.Path]::GetFullPath($Path) } catch { return $Path }
-}
+. (Join-Path $PSScriptRoot "WorkstationConfig.ps1")
 
 $planFull = Get-FullPathSafe $MovePlanPath
 if (-not (Test-Path -LiteralPath $planFull -PathType Leaf)) {
@@ -35,7 +33,7 @@ $results = [System.Collections.Generic.List[object]]::new()
 foreach ($batch in $batches) {
     $batchId = [string]$batch.batch_id
     try {
-        $raw = & $moveScript -MovePlanPath $planFull -BatchId $batchId -PreflightOnly -OutputDir $out
+        $raw = & $moveScript -MovePlanPath $planFull -BatchId $batchId -PreflightOnly -OutputDir $out -ConfigPath $ConfigPath
         $preflight = $raw | ConvertFrom-Json
         $results.Add([pscustomobject][ordered]@{
             batch_id = $batchId

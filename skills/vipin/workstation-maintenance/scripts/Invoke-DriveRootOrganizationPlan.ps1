@@ -5,24 +5,23 @@ param(
     [switch]$PreflightOnly,
     [string[]]$SkipIds = @(),
     [string]$RollbackManifestPath = "",
-    [string]$OutputDir = ""
+    [string]$OutputDir = "",
+    [string]$ConfigPath = ""
 )
 
 $ErrorActionPreference = "Stop"
-$HardProtectedRootNames = @("Research", "AGENT_RESOURCE", "agent-resources", "AGENTIC_SCIENCE", "devtools", "devtools-public", "DELVTOOLS_PUBLIC", "_Organized")
+. (Join-Path $PSScriptRoot "WorkstationConfig.ps1")
 
-function Get-FullPathSafe {
-    param([string]$Path)
-    try { return [System.IO.Path]::GetFullPath($Path) } catch { return $Path }
-}
+# Rollback only needs the roots recorded in the plan; a forward run must also
+# check the current config, so a hand-edited plan cannot unprotect a folder.
+$config = Get-WorkstationConfig -ConfigPath $ConfigPath -Required:(-not $RollbackManifestPath)
+$NoMoveRoots = @($config.protected_roots) + @($config.infrastructure_roots) + @($config.project_roots)
+$RecordOnlyNames = @("_Organized")
 
-function Test-PathUnder {
-    param([string]$Path, [string]$Root)
-    if (-not $Path) { return $false }
-    $full = (Get-FullPathSafe $Path).TrimEnd('\')
-    $base = (Get-FullPathSafe $Root).TrimEnd('\')
-    return $full.Equals($base, [System.StringComparison]::OrdinalIgnoreCase) -or
-        $full.StartsWith($base + "\", [System.StringComparison]::OrdinalIgnoreCase)
+function Add-PlanRoots {
+    param($Document)
+    $script:NoMoveRoots += @(Get-PlanList $Document "protected_roots") + @(Get-PlanList $Document "infrastructure_roots") + @(Get-PlanList $Document "project_roots")
+    $script:RecordOnlyNames += @(Get-PlanList $Document "excluded_names")
 }
 
 function Test-ImmediateChild {
@@ -53,10 +52,18 @@ function Test-SamePath {
 }
 
 function Test-HardProtectedRoot {
-    param([string]$Path, [string]$DriveRoot)
-    if (-not (Test-ImmediateChild $Path $DriveRoot)) { return $false }
+    # A folder that is, sits inside, or contains a protected, infrastructure or
+    # project root never moves, and neither does an excluded name.
+    param([string]$Path)
     $leaf = Split-Path -Leaf (Get-FullPathSafe $Path).TrimEnd('\')
-    return [bool]($HardProtectedRootNames | Where-Object { $_.Equals($leaf, [System.StringComparison]::OrdinalIgnoreCase) })
+    if ($RecordOnlyNames | Where-Object { $_ -and $_.Equals($leaf, [System.StringComparison]::OrdinalIgnoreCase) }) {
+        return $true
+    }
+    foreach ($root in @($NoMoveRoots)) {
+        if (-not $root) { continue }
+        if ((Test-PathUnder $Path $root) -or (Test-PathUnder $root $Path)) { return $true }
+    }
+    return $false
 }
 
 function Test-ReparsePoint {
@@ -72,6 +79,7 @@ if ($RollbackManifestPath) {
         throw "Rollback manifest not found: $rollbackFull"
     }
     $applied = Get-Content -LiteralPath $rollbackFull -Raw | ConvertFrom-Json
+    Add-PlanRoots $applied
     $rollbackDriveRoot = [string]$applied.drive_root
     $rollbackTargetRoot = [string]$applied.target_root
     if (-not $rollbackDriveRoot -or -not $rollbackTargetRoot) {
@@ -82,14 +90,14 @@ if ($RollbackManifestPath) {
         if (-not (Test-ImmediateChild $item.original_source $rollbackDriveRoot)) {
             throw "Rollback source is not an immediate child of drive root: $($item.original_source)"
         }
-        if (Test-HardProtectedRoot $item.original_source $rollbackDriveRoot) {
+        if (Test-HardProtectedRoot $item.original_source) {
             throw "Refusing rollback into protected root: $($item.original_source)"
         }
         if (-not (Test-PathUnder $item.moved_destination $rollbackTargetRoot)) {
             throw "Rollback moved destination is outside target root: $($item.moved_destination)"
         }
-        if (Test-PathUnder $item.original_source "D:\Research" -or Test-PathUnder $item.moved_destination "D:\Research") {
-            throw "Refusing rollback involving Research path: $($item.original_source)"
+        if (Test-HardProtectedRoot $item.moved_destination) {
+            throw "Refusing rollback involving a protected path: $($item.moved_destination)"
         }
         if (-not (Test-Path -LiteralPath $item.moved_destination -PathType Container)) {
             throw "Rollback target missing: $($item.moved_destination)"
@@ -124,6 +132,7 @@ if (-not (Test-Path -LiteralPath $planFull -PathType Leaf)) {
     throw "Plan not found: $planFull"
 }
 $plan = Get-Content -LiteralPath $planFull -Raw | ConvertFrom-Json
+Add-PlanRoots $plan
 if (-not $OutputDir) {
     $OutputDir = Split-Path -Parent $planFull
 }
@@ -155,14 +164,14 @@ foreach ($item in $items) {
     if (-not (Test-ImmediateChild $item.source_path $driveRoot)) {
         throw "Source is not an immediate child of drive root: $($item.source_path)"
     }
-    if (Test-HardProtectedRoot $item.source_path $driveRoot) {
+    if (Test-HardProtectedRoot $item.source_path) {
         throw "Refusing protected root from drive-root plan: $($item.source_path)"
     }
     if (-not (Test-PathUnder $item.target_path $targetRoot)) {
         throw "Target is outside target root: $($item.target_path)"
     }
-    if (Test-PathUnder $item.source_path "D:\Research" -or Test-PathUnder $item.target_path "D:\Research") {
-        throw "Refusing Research path: $($item.source_path)"
+    if (Test-HardProtectedRoot $item.target_path) {
+        throw "Refusing target under a protected path: $($item.target_path)"
     }
     $sourceExists = Test-Path -LiteralPath $item.source_path -PathType Container
     $targetExists = Test-Path -LiteralPath $item.target_path -PathType Container
@@ -241,16 +250,20 @@ foreach ($item in $items) {
 }
 
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$appliedPath = Join-Path $out "d-drive-root-organization-applied-$stamp.json"
+$appliedPath = Join-Path $out "drive-root-organization-applied-$stamp.json"
 $applied = [ordered]@{
     schema_version = "1.0"
     applied_at = (Get-Date).ToString("o")
     plan_path = $planFull
     drive_root = $driveRoot
     target_root = $targetRoot
+    protected_roots = @(Get-PlanList $plan "protected_roots")
+    infrastructure_roots = @(Get-PlanList $plan "infrastructure_roots")
+    project_roots = @(Get-PlanList $plan "project_roots")
+    excluded_names = @(Get-PlanList $plan "excluded_names")
     moved_count = $moved.Count
     items = $moved
-    rollback_command = "powershell -NoProfile -ExecutionPolicy Bypass -File `"D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-DriveRootOrganizationPlan.ps1`" -PlanPath `"$planFull`" -RollbackManifestPath `"$appliedPath`""
+    rollback_command = Get-ScriptCommand "Invoke-DriveRootOrganizationPlan.ps1" "-PlanPath `"$planFull`" -RollbackManifestPath `"$appliedPath`""
 }
 $applied | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $appliedPath -Encoding UTF8
 

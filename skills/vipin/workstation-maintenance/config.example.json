@@ -1,0 +1,22 @@
+{
+  "protected_roots": [
+    "%USERPROFILE%\\Documents\\Finance",
+    "%USERPROFILE%\\Documents\\Medical"
+  ],
+  "infrastructure_roots": [
+    "%USERPROFILE%\\tools"
+  ],
+  "project_roots": [
+    "%USERPROFILE%\\source\\repos"
+  ],
+  "inventory_roots": [
+    "%USERPROFILE%\\Downloads",
+    "%USERPROFILE%\\Desktop"
+  ],
+  "organized_root": "%USERPROFILE%\\_Organized",
+  "coursework_patterns": [],
+  "drive_root_rules": [
+    { "pattern": "^old-courses$", "category": "Coursework" },
+    { "pattern": "^(screenshots|recordings)$", "category": "Media" }
+  ]
+}

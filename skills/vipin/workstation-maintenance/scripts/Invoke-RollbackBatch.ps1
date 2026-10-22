@@ -1,22 +1,12 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$AppliedManifestPath
+    [string]$AppliedManifestPath,
+    [string]$ConfigPath = ""
 )
 
 $ErrorActionPreference = "Stop"
 
-function Get-FullPathSafe {
-    param([string]$Path)
-    try { return [System.IO.Path]::GetFullPath($Path) } catch { return $Path }
-}
-
-function Test-PathUnder {
-    param([string]$Path, [string]$Root)
-    $full = (Get-FullPathSafe $Path).TrimEnd('\')
-    $base = (Get-FullPathSafe $Root).TrimEnd('\')
-    return $full.Equals($base, [System.StringComparison]::OrdinalIgnoreCase) -or
-        $full.StartsWith($base + "\", [System.StringComparison]::OrdinalIgnoreCase)
-}
+. (Join-Path $PSScriptRoot "WorkstationConfig.ps1")
 
 $manifestFull = Get-FullPathSafe $AppliedManifestPath
 if (-not (Test-Path -LiteralPath $manifestFull -PathType Leaf)) {
@@ -29,9 +19,12 @@ if ($items.Count -eq 0) {
     throw "Applied manifest has no items."
 }
 
+$config = Get-WorkstationConfig -ConfigPath $ConfigPath
+$ProtectedRoots = @(@(Get-PlanList $applied "protected_roots") + @($config.protected_roots) | Sort-Object -Unique)
+
 foreach ($item in $items) {
-    if (Test-PathUnder $item.rollback_destination "D:\Research") {
-        throw "Refusing rollback into D:\Research: $($item.rollback_destination)"
+    if (Test-PathUnderAny $item.rollback_destination $ProtectedRoots) {
+        throw "Refusing rollback into a protected root: $($item.rollback_destination)"
     }
     if (-not (Test-Path -LiteralPath $item.rollback_source -PathType Leaf)) {
         throw "Rollback source missing: $($item.rollback_source)"

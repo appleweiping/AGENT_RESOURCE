@@ -5,23 +5,13 @@ param(
     [string]$BatchId,
     [switch]$Approved,
     [switch]$PreflightOnly,
-    [string]$OutputDir = ""
+    [string]$OutputDir = "",
+    [string]$ConfigPath = ""
 )
 
 $ErrorActionPreference = "Stop"
 
-function Get-FullPathSafe {
-    param([string]$Path)
-    try { return [System.IO.Path]::GetFullPath($Path) } catch { return $Path }
-}
-
-function Test-PathUnder {
-    param([string]$Path, [string]$Root)
-    $full = (Get-FullPathSafe $Path).TrimEnd('\')
-    $base = (Get-FullPathSafe $Root).TrimEnd('\')
-    return $full.Equals($base, [System.StringComparison]::OrdinalIgnoreCase) -or
-        $full.StartsWith($base + "\", [System.StringComparison]::OrdinalIgnoreCase)
-}
+. (Join-Path $PSScriptRoot "WorkstationConfig.ps1")
 
 if ($Approved -and $PreflightOnly) {
     throw "Use either -Approved or -PreflightOnly, not both."
@@ -49,6 +39,13 @@ $out = Get-FullPathSafe $OutputDir
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 
 $targetRoot = [string]$plan.target_root
+# Check against the protected roots recorded in the plan and the current config.
+# Plans written before protected_roots existed need a config to be checked against.
+$config = Get-WorkstationConfig -ConfigPath $ConfigPath
+if (-not ($plan.PSObject.Properties.Name -contains "protected_roots") -and -not $config.source) {
+    throw "This move plan does not record protected_roots and no config was found. Pass -ConfigPath."
+}
+$ProtectedRoots = @(@(Get-PlanList $plan "protected_roots") + @($config.protected_roots) | Sort-Object -Unique)
 $items = @($batch.items)
 if ($items.Count -eq 0) {
     throw "Batch has no items: $BatchId"
@@ -71,8 +68,11 @@ foreach ($item in $items) {
     if ($item.git_root) {
         throw "Refusing git worktree item: $($item.id)"
     }
-    if (Test-PathUnder $item.resolved_path "D:\Research") {
-        throw "Refusing D:\Research item: $($item.resolved_path)"
+    if ((Test-PathUnderAny $item.resolved_path $ProtectedRoots) -or (Test-PathUnderAny $item.path $ProtectedRoots)) {
+        throw "Refusing item under a protected root: $($item.resolved_path)"
+    }
+    if (Test-PathUnderAny $item.proposed_destination $ProtectedRoots) {
+        throw "Refusing destination under a protected root: $($item.proposed_destination)"
     }
     if (-not (Test-Path -LiteralPath $item.path -PathType Leaf)) {
         throw "Source file missing: $($item.path)"
@@ -111,7 +111,7 @@ if ($PreflightOnly) {
         status = "passed"
         moves_executed = $false
         items = $checked
-        approved_command = "powershell -NoProfile -ExecutionPolicy Bypass -File `"D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-ApprovedMoveBatch.ps1`" -MovePlanPath `"$planFull`" -BatchId `"$BatchId`" -Approved"
+        approved_command = Get-ScriptCommand "Invoke-ApprovedMoveBatch.ps1" "-MovePlanPath `"$planFull`" -BatchId `"$BatchId`" -Approved"
     }
     $preflight | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $preflightPath -Encoding UTF8
     [pscustomobject]@{
@@ -147,9 +147,10 @@ $applied = [ordered]@{
     move_plan_path = $planFull
     batch_id = $BatchId
     target_root = $targetRoot
+    protected_roots = @($ProtectedRoots)
     item_count = $moved.Count
     items = $moved
-    rollback_command = "powershell -NoProfile -ExecutionPolicy Bypass -File `"D:\agent-resources\skills\vipin\workstation-maintenance\scripts\Invoke-RollbackBatch.ps1`" -AppliedManifestPath `"$appliedPath`""
+    rollback_command = Get-ScriptCommand "Invoke-RollbackBatch.ps1" "-AppliedManifestPath `"$appliedPath`""
 }
 $applied | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $appliedPath -Encoding UTF8
 

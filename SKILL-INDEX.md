@@ -10,8 +10,8 @@ commits in [THIRD_PARTY_SKILLS.md](THIRD_PARTY_SKILLS.md) and download into
 `third_party/` with `scripts/fetch-third-party.sh` or `.ps1`.
 
 ## workstation-maintenance
-- What: Inventory C:/D:/G:, plan file moves in type-grouped batches (30-day age gate, 100 items per batch), move D:\ root folders behind junctions, write rollback manifests.
-- When: "clean up / organize my drives", "tidy D:\", preparing or approving a move batch, undoing a move.
+- What: Inventory local drives, plan file moves in type-grouped batches (30-day age gate, 100 items per batch), move a drive's top-level folders behind junctions, write rollback manifests. Protected folders come from a local `config.json`.
+- When: "clean up / organize my drives", "tidy my Downloads", preparing or approving a move batch, undoing a move.
 - Path: [skills/vipin/workstation-maintenance](skills/vipin/workstation-maintenance)
 
 ## project-hardness

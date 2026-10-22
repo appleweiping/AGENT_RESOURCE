@@ -1,26 +1,31 @@
 param(
-    [string[]]$Roots = @("C:\", "D:\", "G:\"),
+    [string[]]$Roots = @(),
     [string]$OutputDir = ".",
-    [string]$TargetRoot = "D:\_Organized",
+    [string]$TargetRoot = "",
+    [string]$ConfigPath = "",
     [ValidateSet("Live", "Fixture")]
     [string]$Mode = "Live"
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "WorkstationConfig.ps1")
 
-function Get-FullPathSafe {
-    param([string]$Path)
-    try { return [System.IO.Path]::GetFullPath($Path) } catch { return $Path }
+# A live run must know what to protect, so it needs a config file.
+$config = Get-WorkstationConfig -ConfigPath $ConfigPath -Required:($Mode -eq "Live")
+if ($Roots.Count -eq 0) { $Roots = @($config.inventory_roots) }
+if ($Roots.Count -eq 0) {
+    throw "Nothing to scan. Pass -Roots or set inventory_roots in the config."
 }
-
-function Test-PathUnder {
-    param([string]$Path, [string]$Root)
-    if (-not $Path) { return $false }
-    $full = (Get-FullPathSafe $Path).TrimEnd('\')
-    $base = (Get-FullPathSafe $Root).TrimEnd('\')
-    return $full.Equals($base, [System.StringComparison]::OrdinalIgnoreCase) -or
-        $full.StartsWith($base + "\", [System.StringComparison]::OrdinalIgnoreCase)
+if (-not $TargetRoot) { $TargetRoot = $config.organized_root }
+if (-not $TargetRoot) {
+    throw "No target folder. Pass -TargetRoot or set organized_root in the config."
 }
+$ProtectedRoots = @($config.protected_roots)
+$SystemRoots = @(Get-SystemRoots)
+$InfrastructureRoots = @($config.infrastructure_roots) + @(Get-BuiltInInfrastructureRoots)
+$ProjectRoots = @($config.project_roots)
+$CourseworkPattern = (@('exam', 'course', 'lecture', 'study', 'homework', 'assignment', 'resit') + @($config.coursework_patterns)) -join '|'
+$ProfileFolders = @("Downloads", "Desktop", "Documents", "Pictures", "Videos")
 
 function Get-ReparseTarget {
     param($Item)
@@ -66,11 +71,13 @@ function Get-GitRoot {
 function Get-SourceBucket {
     param([string]$Path)
     $full = Get-FullPathSafe $Path
-    if ($full.StartsWith("C:\Users\admin\Downloads", [System.StringComparison]::OrdinalIgnoreCase)) { return "Users-admin-Downloads" }
-    if ($full.StartsWith("C:\Users\admin\Desktop", [System.StringComparison]::OrdinalIgnoreCase)) { return "Users-admin-Desktop" }
-    if ($full.StartsWith("C:\Users\admin\Documents", [System.StringComparison]::OrdinalIgnoreCase)) { return "Users-admin-Documents" }
-    if ($full.StartsWith("C:\Users\admin\Pictures", [System.StringComparison]::OrdinalIgnoreCase)) { return "Users-admin-Pictures" }
-    if ($full.StartsWith("C:\Users\admin\Videos", [System.StringComparison]::OrdinalIgnoreCase)) { return "Users-admin-Videos" }
+    if ($env:USERPROFILE) {
+        foreach ($folder in $ProfileFolders) {
+            if (Test-PathUnder $full (Join-Path $env:USERPROFILE $folder)) {
+                return ("Users-$($env:USERNAME)-$folder" -replace '[^A-Za-z0-9._-]+', '-')
+            }
+        }
+    }
     $leafParent = Split-Path -Leaf (Split-Path -Parent $full)
     if (-not $leafParent) { $leafParent = "root" }
     return ($leafParent -replace '[^A-Za-z0-9._-]+', '-')
@@ -104,16 +111,16 @@ function Get-Classification {
     $name = $Item.Name.ToLowerInvariant()
     $lower = $path.ToLowerInvariant()
 
-    if (Test-PathUnder $path "D:\Research") {
-        return @("Protected-NoMove", "protected", "D:\Research boundary")
+    if (Test-PathUnderAny $path $ProtectedRoots) {
+        return @("Protected-NoMove", "protected", "under a protected root")
     }
-    if ($ReparseTarget -and (Test-PathUnder $ReparseTarget "D:\Research")) {
-        return @("Protected-NoMove", "protected", "reparse target under D:\Research")
+    if ($ReparseTarget -and (Test-PathUnderAny $ReparseTarget $ProtectedRoots)) {
+        return @("Protected-NoMove", "protected", "reparse target under a protected root")
     }
     if ($Kind -eq "reparse") {
         return @("Protected-NoMove", "protected", "reparse point")
     }
-    if ($lower -match '^c:\\(windows|program files|program files \(x86\)|programdata)(\\|$)') {
+    if (Test-PathUnderAny $path $SystemRoots) {
         return @("Protected-NoMove", "protected", "Windows system or installed program root")
     }
     if ($Mode -ne "Fixture" -and $lower -match '\\appdata\\') {
@@ -122,23 +129,19 @@ function Get-Classification {
     if ($lower -match '\\(cache|caches|node_modules|\.venv|venv|site-packages|logs?|sessions?|profiles?|cookies|databases?|auth)(\\|$)') {
         return @("Protected-NoMove", "protected", "runtime/cache/auth/session path")
     }
-    if ($lower -match '^d:\\(devtools|devtools-public|delvtools_public|agent_resource|agent-resources|agentic_science)(\\|$)' -or
-        $lower -match '^c:\\users\\admin\\\.(codex|claude|openhands)(\\|$)' -or
-        $lower -match '^c:\\users\\admin\\\.config\\opencode(\\|$)' -or
-        $lower -match '^c:\\users\\admin\\\.cache\\opencode(\\|$)' -or
-        $lower -match '^c:\\users\\admin\\\.local\\(share|state)\\opencode(\\|$)') {
+    if (Test-PathUnderAny $path $InfrastructureRoots) {
         return @("AgentInfrastructure", "high", "agent infrastructure path")
     }
     if ($GitRoot) {
         return @("ActiveProject", "high", "inside git worktree")
     }
-    if ($lower -match '^d:\\(company|project|healthcare|game_develop|frontend|weipingyan_portfolio)(\\|$)') {
-        return @("ActiveProject", "high", "known important D-drive project root")
+    if (Test-PathUnderAny $path $ProjectRoots) {
+        return @("ActiveProject", "high", "configured project root")
     }
     if ($lower -match '(medical|health|bank|finance|tax|passport|visa|insurance|application|contract|offer|resume|cv|identity|credential|secret|token|private)') {
         return @("PersonalSensitive", "high", "sensitive filename/path pattern")
     }
-    if ($name -match '(exam|course|lecture|study|homework|assignment|resit|optics|31ils|31opt)') {
+    if ($name -match "($CourseworkPattern)") {
         return @("CourseworkArchive", "medium", "coursework filename/path pattern")
     }
     if ($name -match '\.(jpg|jpeg|png|gif|webp|mp4|mov|avi|mkv|mp3|wav|flac)$') {
@@ -168,7 +171,7 @@ function Add-InventoryItem {
     if ($reparseTarget) {
         $resolved = Get-FullPathSafe $reparseTarget
     }
-    if (Test-PathUnder $resolved "D:\Research" -or Test-PathUnder $Item.FullName "D:\Research") {
+    if ((Test-PathUnderAny $resolved $ProtectedRoots) -or (Test-PathUnderAny $Item.FullName $ProtectedRoots)) {
         return
     }
     $gitRoot = if ($kind -eq "reparse") { $null } else { Get-GitRoot $Item.FullName }
@@ -212,15 +215,15 @@ New-Item -ItemType Directory -Force -Path $out | Out-Null
 $scanPaths = [System.Collections.Generic.List[string]]::new()
 foreach ($root in $Roots) {
     if (-not (Test-Path -LiteralPath $root)) { continue }
-    if (Test-PathUnder $root "D:\Research") { continue }
+    if (Test-PathUnderAny $root $ProtectedRoots) { continue }
     $scanPaths.Add((Get-FullPathSafe $root))
     try {
         Get-ChildItem -LiteralPath $root -Force -ErrorAction Stop | ForEach-Object {
-            if (-not (Test-PathUnder $_.FullName "D:\Research")) {
+            if (-not (Test-PathUnderAny $_.FullName $ProtectedRoots)) {
                 $scanPaths.Add($_.FullName)
                 if ($_.PSIsContainer -and $_.Name -match '^(Downloads|Download|Temp|tmp|Pictures|Videos|Desktop|Documents)$') {
                     Get-ChildItem -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue | ForEach-Object {
-                        if (-not (Test-PathUnder $_.FullName "D:\Research")) { $scanPaths.Add($_.FullName) }
+                        if (-not (Test-PathUnderAny $_.FullName $ProtectedRoots)) { $scanPaths.Add($_.FullName) }
                     }
                 }
             }
@@ -230,20 +233,15 @@ foreach ($root in $Roots) {
     }
 }
 
-if ($Mode -eq "Live") {
-    $extraDirs = @(
-        "C:\Users\admin\Downloads",
-        "C:\Users\admin\Desktop",
-        "C:\Users\admin\Documents",
-        "C:\Users\admin\Pictures",
-        "C:\Users\admin\Videos",
-        "C:\Users\admin\AppData\Local\Temp"
-    )
+if ($Mode -eq "Live" -and $env:USERPROFILE) {
+    # Also look one level into the usual clutter folders of the current user.
+    $extraDirs = @($ProfileFolders | ForEach-Object { Join-Path $env:USERPROFILE $_ })
+    if ($env:LOCALAPPDATA) { $extraDirs += (Join-Path $env:LOCALAPPDATA "Temp") }
     foreach ($dir in $extraDirs) {
         if (Test-Path -LiteralPath $dir -PathType Container) {
             try {
                 Get-ChildItem -LiteralPath $dir -Force -ErrorAction SilentlyContinue | ForEach-Object {
-                    if (-not (Test-PathUnder $_.FullName "D:\Research")) { $scanPaths.Add($_.FullName) }
+                    if (-not (Test-PathUnderAny $_.FullName $ProtectedRoots)) { $scanPaths.Add($_.FullName) }
                 }
             } catch {
                 Write-Warning "Could not enumerate extra dir ${dir}: $($_.Exception.Message)"
@@ -257,7 +255,7 @@ $items = [System.Collections.Generic.List[object]]::new()
 $counter = 0
 foreach ($path in $uniquePaths) {
     if (-not (Test-Path -LiteralPath $path)) { continue }
-    if (Test-PathUnder $path "D:\Research") { continue }
+    if (Test-PathUnderAny $path $ProtectedRoots) { continue }
     try {
         $item = Get-Item -LiteralPath $path -Force -ErrorAction Stop
         Add-InventoryItem -Item $item -Items $items -Counter ([ref]$counter)
@@ -274,8 +272,10 @@ $manifest = [ordered]@{
     schema_version = "1.0"
     generated_at = (Get-Date).ToString("o")
     mode = $Mode
-    roots = $Roots
+    config_path = $config.source
+    roots = @($Roots)
     target_root = $TargetRoot
+    protected_roots = @($ProtectedRoots)
     item_count = $items.Count
     move_eligible_count = @($items | Where-Object { $_.move_eligible }).Count
     items = $items
@@ -298,7 +298,7 @@ foreach ($group in @($items | Group-Object category | Sort-Object Name)) {
     $lines.Add("| $($group.Name) | $($group.Count) | $eligibleCount |")
 }
 $lines.Add("")
-$lines.Add("D:\\Research entries are intentionally excluded from this manifest.")
+$lines.Add("Paths under protected roots are left out of this manifest on purpose.")
 $lines | Set-Content -LiteralPath $mdPath -Encoding UTF8
 
 [pscustomobject]@{
