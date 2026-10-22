@@ -90,6 +90,8 @@ try {
         $drivePathHits | Select-Object -First 80
         throw "Tracked files contain absolute Windows paths in $resolved"
     }
+    # git grep exits 1 when nothing matches; do not let that become the script's exit code.
+    $global:LASTEXITCODE = 0
 
     Write-Host "Strict public-safety scan passed: $resolved" -ForegroundColor Green
 } finally {
