@@ -2,8 +2,8 @@
 
 These are skills written by other people that I run alongside my own. This repo
 used to carry full copies of them; it now only lists where they come from and the
-commit to pin. The copies are still in git history: the last commit that had them
-is [`594166a`](https://github.com/appleweiping/AGENT_RESOURCE/tree/594166a).
+commit to pin. Get them from upstream with the fetch script below, not from this
+repo's history.
 
 To download them into a local, git-ignored `third_party/` folder:
 
