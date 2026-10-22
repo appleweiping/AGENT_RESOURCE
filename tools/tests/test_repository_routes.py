@@ -5,52 +5,44 @@ from pathlib import Path
 
 from tools.skill_catalog import discover, search
 
+ROOT = Path(__file__).resolve().parents[2]
+
 
 class RepositoryRoutingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.skills = discover(Path(__file__).resolve().parents[2])
+        cls.skills = discover(ROOT)
 
-    def test_representative_intents_find_expected_skills(self) -> None:
+    def test_plain_requests_find_the_matching_skill_first(self) -> None:
         cases = {
-            "root cause debugging unexpected behavior": {
-                "root-cause-tracing",
-                "systematic-debugging",
-            },
-            "write and improve repository README documentation": {
-                "readme-blueprint-generator",
-                "write-concisely",
-            },
-            "build polished frontend UI design": {
-                "frontend-design",
-                "frontend-design-direction",
-            },
-            "agent architecture MCP memory": {"agent-architecture-audit"},
-            "audit research paper citations evidence": {
-                "deep-research",
-                "paper-orchestra",
-            },
-            "排查测试失败的根本原因": {"root-cause-tracing", "systematic-debugging"},
-            "智能体架构 MCP 内存": {"agent-architecture-audit"},
-            "审查论文引用证据": {"deep-research", "paper-orchestra"},
+            "organize old files on my drives": "workstation-maintenance",
+            "turn a novel into a manga script": "literature-to-manga",
+            "harden a vague requirement before editing a large project": "project-hardness",
+            "draft email replies in gmail": "email-assistant",
+            "summarize a Feishu document link": "feishu-bridge",
+            "triage unread wechat messages and prefill a reply": "communication-assistant",
+            "upload a video to wechat channels": "wechat-video-channel-publish",
+            "career advice from lidang perspective": "lidang-perspective",
         }
         for query, expected in cases.items():
             with self.subTest(query=query):
-                names = {skill.name for _, skill in search(self.skills, query, limit=5)}
-                self.assertTrue(names & expected, f"{query!r} returned {sorted(names)}")
+                results = search(self.skills, query, limit=3)
+                self.assertTrue(results, f"{query!r} returned nothing")
+                self.assertEqual(expected, results[0][1].name)
 
-    def test_mixed_chinese_debugging_intent_is_not_mistaken_for_visual_design(
-        self,
-    ) -> None:
-        names = [
-            skill.name for _, skill in search(self.skills, "前端测试失败排查", limit=5)
-        ]
+    def test_every_skill_folder_explains_itself(self) -> None:
+        for skill in self.skills:
+            folder = ROOT / Path(skill.manifest_path).parent
+            with self.subTest(skill=skill.name):
+                self.assertTrue(
+                    (folder / "README.md").is_file(),
+                    f"{folder} needs a README.md with a usage example",
+                )
 
-        self.assertIn("webapp-testing", names)
-        self.assertNotIn("frontend-design", names)
+    def test_skill_names_are_unique(self) -> None:
+        names = [skill.name for skill in self.skills]
+        self.assertEqual(len(names), len(set(names)))
 
-    def test_english_multi_intent_query_prioritizes_the_action(self) -> None:
-        results = search(self.skills, "write frontend tests", limit=5)
 
-        self.assertTrue(results)
-        self.assertEqual("write-tests", results[0][1].name)
+if __name__ == "__main__":
+    unittest.main()

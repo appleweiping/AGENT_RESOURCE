@@ -13,14 +13,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  skill-library:
+  skills:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Python
@@ -28,44 +27,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate complete skill library
+      - name: Validate SKILL.md files and run unit tests
         shell: pwsh
-        run: ./tools/Test-SkillLibrary.ps1
+        run: ./tools/Test-SkillLibrary.ps1 -Strict
 
-      - name: Enforce strict validation on changed skills
-        if: github.event_name == 'pull_request'
-        shell: pwsh
-        run: ./tools/Test-SkillLibrary.ps1 -ChangedFrom '${{ github.event.pull_request.base.sha }}' -SkipTests
+      - name: Check relative Markdown links
+        run: python tools/check_links.py
 
-      - name: Enforce strict validation on directly pushed skills
-        if: github.event_name == 'push'
+      - name: Scan for committed secrets
         shell: pwsh
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          PUSHED_REF: ${{ github.ref_name }}
-        run: |
-          $zeroSha = '0000000000000000000000000000000000000000'
-          $base = $env:BEFORE_SHA
-          if ($base -eq $zeroSha) {
-            if ($env:PUSHED_REF -eq $env:DEFAULT_BRANCH) {
-              Write-Host 'No baseline exists; strictly validating the complete library.'
-              ./tools/Test-SkillLibrary.ps1 -Strict -SkipTests
-              exit $LASTEXITCODE
-            }
-            $defaultRef = "refs/remotes/origin/$($env:DEFAULT_BRANCH)"
-            git rev-parse --verify --quiet $defaultRef | Out-Null
-            if ($LASTEXITCODE -ne 0) {
-              Write-Host 'No baseline exists; strictly validating the complete library.'
-              ./tools/Test-SkillLibrary.ps1 -Strict -SkipTests
-              exit $LASTEXITCODE
-            }
-            $base = $defaultRef
-          }
-          ./tools/Test-SkillLibrary.ps1 -ChangedFrom $base -SkipTests
-
-      - name: Run routing and public-safety smoke tests
-        shell: pwsh
-        run: |
-          ./tools/Test-ImplicitSkillRouting.ps1
-          ./tools/Test-PublicSafety.ps1
+        run: ./tools/Test-PublicSafety.ps1

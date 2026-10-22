@@ -25,7 +25,11 @@ if ($LASTEXITCODE -ne 0) {
 if (-not $SkipTests) {
     Push-Location $root
     try {
+        # unittest reports on stderr; Windows PowerShell 5.1 turns redirected
+        # stderr into errors, so rely on the exit code instead.
+        $ErrorActionPreference = "Continue"
         & $python.Source -m unittest discover -s "tools/tests" -p "test_*.py"
+        $ErrorActionPreference = "Stop"
         if ($LASTEXITCODE -ne 0) {
             throw "Skill library unit tests failed in $root"
         }
