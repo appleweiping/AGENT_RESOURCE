@@ -1,8 +1,6 @@
-repos/
-hooks/claude-memory-kit/
 node_modules/
-# Generated, slugified staging for agency-agents (regenerate via D:\devtools\agency-build-staging.ps1)
-staging/
+__pycache__/
+*.pyc
 .env
 *.env
 *.local
@@ -18,35 +16,60 @@ tmp/
 *.sqlite-wal
 *.db
 *.log
-__pycache__/
-*.pyc
+.gstack/
 
-# Local-only skill packs pending provenance/license clearance.
+# Third-party skills fetched by scripts/fetch-third-party.{sh,ps1}.
+third_party/
+
+# Local-only folders on my machine (upstream clones, generated agent staging,
+# packs whose license I have not checked). Never commit them.
+repos/
+staging/
+hooks/claude-memory-kit/
 skills/game-studios/
 skills/godogen/
 
-# Curated nuwa-skill subset: keep LICENSE, SKILL.md, references/, scripts/,
-# and small source assets; leave generated/examples/marketing media local.
-skills/standalone/nuwa-skill/.git/
-skills/standalone/nuwa-skill/examples/
-skills/standalone/nuwa-skill/README*.md
-skills/standalone/nuwa-skill/*.png
-skills/standalone/nuwa-skill/*.jpg
-skills/standalone/nuwa-skill/assets/*.gif
-skills/standalone/nuwa-skill/x-thread-en.md
-.gstack/
-
-# Original full skill pack (~48MB): keep only the curated subset above, not the archive.
-skills/standalone/nuwa-skill.zip
-
-# Curated huashu-design (花叔Design) subset: keep SKILL.md, LICENSE, READMEs,
-# references/, scripts/, demos/, and functional code assets; leave heavy
-# audio/screenshot media local-only (re-fetch from upstream if needed).
-skills/standalone/huashu-design/.git/
-skills/standalone/huashu-design/node_modules/
-skills/standalone/huashu-design/assets/bgm-*.mp3
-skills/standalone/huashu-design/assets/sfx/
-skills/standalone/huashu-design/assets/showcases/
-
 # Local disk audit ledger written by my wiki tooling; never publish it.
 disk-audit/
+
+# Skill folders that used to hold vendored third-party copies (see
+# THIRD_PARTY_SKILLS.md). Ignored so a local copy is not committed again.
+skills/anthropics/
+skills/claude-plugins-official/
+skills/composio/
+skills/context-engineering-kit/
+skills/ecc/
+skills/graphify/
+skills/inkos/
+skills/obra-superpowers/
+skills/shadcn/
+skills/trailofbits/
+skills/vipin/chrome-automation/
+skills/vipin/content-creation-publisher/
+skills/vipin/frontend-design/
+skills/vipin/lark-*/
+skills/vipin/llm4ppt(html)/
+skills/vipin/paper-orchestra/
+skills/vipin/readme-blueprint-generator/
+skills/standalone/_video_style_analysis/
+skills/standalone/anbeime-skill/
+skills/standalone/build-mcp-app/
+skills/standalone/build-mcp-server/
+skills/standalone/build-mcpb/
+skills/standalone/canon-pianist-ai-video-project/
+skills/standalone/codegraph-add-lang/
+skills/standalone/codegraph-agent-eval/
+skills/standalone/colleague-skill/
+skills/standalone/darwin-skill/
+skills/standalone/gsap-*/
+skills/standalone/gstack/
+skills/standalone/hookify-writing-rules/
+skills/standalone/huashu-design/
+skills/standalone/karpathy-guidelines/
+skills/standalone/mattpocock-skills/
+skills/standalone/nuwa-skill/
+skills/standalone/nuwa-skill.zip
+skills/standalone/presentation-as-code/
+skills/standalone/session-report/
+skills/standalone/understand/
+skills/standalone/understand-*/

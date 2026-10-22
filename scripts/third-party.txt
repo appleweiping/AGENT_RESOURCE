@@ -1,0 +1,32 @@
+# Third-party skills I use, pinned to upstream commits.
+# Read by fetch-third-party.sh and fetch-third-party.ps1; see THIRD_PARTY_SKILLS.md.
+# Columns: name  github-repo  commit  paths...   ("." = whole repository)
+anthropic-skills            anthropics/skills                      690f15cac7f7b4c055c5ab109c79ed9259934081  skills/algorithmic-art skills/brand-guidelines skills/canvas-design skills/claude-api skills/doc-coauthoring skills/frontend-design skills/internal-comms skills/mcp-builder skills/skill-creator skills/slack-gif-creator skills/theme-factory skills/web-artifacts-builder skills/webapp-testing
+anthropic-document-skills   anthropics/skills                      690f15cac7f7b4c055c5ab109c79ed9259934081  skills/docx skills/pdf skills/pptx skills/xlsx
+claude-plugins-official     anthropics/claude-plugins-official     1b527e2ee74e6dbd198e22cd41701c3b6f47dfec  plugins/agent-sdk-dev plugins/claude-code-setup plugins/claude-md-management plugins/code-modernization plugins/code-review plugins/code-simplifier plugins/commit-commands plugins/feature-dev plugins/hookify plugins/mcp-server-dev plugins/mcp-tunnels plugins/pr-review-toolkit plugins/security-guidance plugins/session-report
+superpowers                 obra/superpowers                       f2cbfbefebbfef77321e4c9abc9e949826bea9d7  skills
+context-engineering-kit     NeoLabHQ/context-engineering-kit       23e2428e809d77717f8acc9659c374a3a1fcb93e  plugins
+trailofbits-skills          trailofbits/skills                     a56045e9ae00b3506cacefea0f672aab0a1a6e3c  plugins
+composio-skills             ComposioHQ/awesome-claude-skills       be2a406907dbc61b73e6827ded415c96139d13a2  .
+ecc                         affaan-m/ECC                           928076cc08cbb31e8549cea2883b4f51811de1c8  agents hooks mcp-configs rules skills
+shadcn                      shadcn-ui/ui                           ced2a5beb5069e87df5cdc08b1f034a38e8f37a3  skills/shadcn
+graphify                    Graphify-Labs/graphify                 990ac706d823bf92275333433fde4ef4782a9139  .
+inkos                       Narcooo/inkos                          5c521fa4b3cb066047b7b0fa1e8ed98d63c99624  skills
+anbeime-skill               anbeime/skill                          6646c3a64cd3e2a4f8cb3703c3a298086d4c6dc9  .
+colleague-skill             titanwings/distilly                    97c75c55449fb1ce9e11ad8967f30d04008554fc  .
+darwin-skill                alchaincyf/darwin-skill                2056abfccd924d68ae6baa9193cafff0f666260b  .
+gstack                      garrytan/gstack                        920a13a17f463c28a3db75cc27482affb13a4fee  .
+mattpocock-skills           mattpocock/skills                      e74f0061bb67222181640effa98c675bdb2fdaa7  .
+nuwa-skill                  alchaincyf/nuwa-skill                  ea4b9abfe0e60e5051ed946c70e51434402d3545  assets references scripts
+huashu-design               alchaincyf/huashu-design               ce69c7d0e55a15404d79c856910eae3adf8c1648  .
+gsap-skills                 greensock/gsap-skills                  aed9cfd3277740755f6bfc1155c7aa645403b760  skills
+karpathy-guidelines         multica-ai/andrej-karpathy-skills      2c606141936f1eeef17fa3043a72095b4765b9c2  skills/karpathy-guidelines
+understand-anything         Egonex-AI/Understand-Anything          470cc01dc5f9236a93eb704afdd479cd5db79710  understand-anything-plugin/skills
+codegraph-skills            colbymchenry/codegraph                 1be8e7830f7ca37e42a378186b0274e684b1d4d8  .claude/skills/add-lang .claude/skills/agent-eval
+presentation-as-code        xiaohongsimon/presentation-as-code     ea1eb7ab7ae5ae7968dee590fded1dd7bd6b3ba6  .
+lark-cli-skills             larksuite/cli                          14a3213038eaf563fb2c1234fe20c92981cc8ed9  skills
+paper-orchestra             Ar9av/PaperOrchestra                   5eda989cc284a32e27dfd08f881e958a3b317406  .
+frontend-slides             zarazhangrui/frontend-slides           8dca834fc61abc9dd633cbe6a74ed7be3d82a608  .
+beautiful-html-templates    zarazhangrui/beautiful-html-templates  8a8ae23f46c549976f4ae03e0c3ddfa9626bf09c  .
+readme-blueprint-generator  github/awesome-copilot                 c8d54ebc290b4c6dbb65b4d6294522c6e2ec171c  skills/readme-blueprint-generator
+awesome-claude-code         hesreallyhim/awesome-claude-code       29755104e1f15404f99db9e5f381e23960efc4a0  .claude/commands resources templates tools/readme_tree
