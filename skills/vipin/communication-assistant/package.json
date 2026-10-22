@@ -11,5 +11,5 @@
     "minimist": "^1.2.8"
   },
   "keywords": ["communication", "wechat", "whatsapp", "qq", "codex", "skill"],
-  "license": "MIT"
+  "license": "Apache-2.0"
 }
