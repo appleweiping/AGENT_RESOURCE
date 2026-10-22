@@ -12,26 +12,23 @@ Use this skill as the routing layer for personal communication tasks across chat
 - Keep normal summaries in Chinese.
 - Never look for, recover, ask to store, or record account passwords.
 - Use QR login, existing browser/client sessions, official OAuth/API tokens, or platform-local session files only.
-- Store any sessions, tokens, configs, and message outbox data under `.wiki-tmp/communication-assistant/`.
+- Store any sessions, tokens, configs, and message outbox data in the git-ignored runtime folder described below.
 - Do not expose private chats, contacts, tokens, cookies, QR codes, or message bodies in public wiki pages, commits, or partner prompts.
 - Prefer `prefilled` over `sent`. Real sending requires explicit user approval for the exact platform, target, and outbox item.
 - If a platform is blocked or unsafe, mark that adapter as pending instead of pretending it works.
 
 ## Runtime Paths
 
-Default ignored runtime directories:
+Runtime data lives under `$env:COMMUNICATION_ASSISTANT_HOME` if it is set. Otherwise it
+goes to `.wiki-tmp/communication-assistant/` inside the skill folder (or inside the
+enclosing notes repo, if the skill sits in a folder that has both `AGENTS.md` and
+`.wiki-schema.md`). Either way it has four git-ignored subfolders: `config`, `sessions`,
+`outbox` and `logs`.
+
+The helper script prints the folders in use and manages outbox items. Run it from the
+skill folder:
 
 ```powershell
-D:\Research\vipin's knowledgebase\.wiki-tmp\communication-assistant\config
-D:\Research\vipin's knowledgebase\.wiki-tmp\communication-assistant\sessions
-D:\Research\vipin's knowledgebase\.wiki-tmp\communication-assistant\outbox
-D:\Research\vipin's knowledgebase\.wiki-tmp\communication-assistant\logs
-```
-
-The helper script prints paths and manages outbox items:
-
-```powershell
-cd "D:\Research\vipin's knowledgebase\.codex\skills\communication-assistant"
 node scripts/outbox.js paths
 node scripts/outbox.js create --platform wechat --target "Alice" --message "我晚点回复你。" --context "reply to unread message"
 node scripts/outbox.js list

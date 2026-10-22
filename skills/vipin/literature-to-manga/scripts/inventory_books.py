@@ -82,8 +82,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "root",
         nargs="?",
-        default=r"D:\Company\anime\literature-books",
-        help="Archive root to scan.",
+        default=os.environ.get("LITERATURE_BOOKS_DIR", "."),
+        help="Archive root to scan (default: $LITERATURE_BOOKS_DIR, else the current folder).",
     )
     parser.add_argument(
         "--extensions",

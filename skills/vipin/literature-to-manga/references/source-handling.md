@@ -4,22 +4,19 @@ Use this reference when working with local book archives, unusual encodings, or 
 
 ## Default Archive
 
-Default root:
-
-```text
-D:\Company\anime\literature-books
-```
+The default root is the folder in `$LITERATURE_BOOKS_DIR`. If it is not set and the user
+gave no path, ask for one.
 
 Run inventory:
 
 ```powershell
-python scripts\inventory_books.py "D:\Company\anime\literature-books" --format markdown --limit 80
+python scripts\inventory_books.py "$env:LITERATURE_BOOKS_DIR" --format markdown --limit 80
 ```
 
 Extract a file:
 
 ```powershell
-python scripts\extract_text.py "D:\Company\anime\literature-books\some-book.txt" --output ".\work\some-book.extracted.txt"
+python scripts\extract_text.py "$env:LITERATURE_BOOKS_DIR\some-book.txt" --output ".\work\some-book.extracted.txt"
 ```
 
 Chunk extracted text:

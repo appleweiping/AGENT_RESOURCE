@@ -11,7 +11,7 @@ It has no code of its own. It expects:
 - the official `lark-*` skills from the same repo. `scripts/fetch-third-party.sh lark-cli-skills`
   downloads the pinned version (see [THIRD_PARTY_SKILLS.md](../../../THIRD_PARTY_SKILLS.md)).
 
-`SKILL.md` points at the `lark-cli.exe` path on my machine; change `$LARK_CLI` to yours.
+Put `lark-cli` on `PATH`, or set `LARK_CLI` to the full path of the binary.
 
 ## Example
 

@@ -37,8 +37,11 @@ gsap-skills -> third_party/gsap-skills @ aed9cfd
 Each folder has a README with one usage example. [SKILL-INDEX.md](SKILL-INDEX.md) has
 the "use this when..." line for each skill, which is what I point my agents at.
 
-Several skills still assume my own folder layout (for example `D:\Research\...` in
-`SKILL.md`). Change those paths before you use them on your machine.
+Nothing here hard-codes my own folders. Machine-specific settings come from a
+git-ignored config file (`workstation-maintenance/config.json`, copied from
+`config.example.json`) or from environment variables that each skill's README names
+(`EMAIL_ASSISTANT_AUTH_DIR`, `COMMUNICATION_ASSISTANT_HOME`, `LARK_CLI`,
+`LITERATURE_BOOKS_DIR`).
 
 ## Install a skill
 
@@ -85,4 +88,6 @@ GitHub Actions runs these plus a secret scan (`tools/Test-PublicSafety.ps1`) on 
 Apache-2.0 ([LICENSE](LICENSE)) covers my own skills and scripts in this repo only.
 Third-party skills keep their upstream licenses and are not redistributed here; see
 [THIRD_PARTY_SKILLS.md](THIRD_PARTY_SKILLS.md). One generated file inside
-`wechat-video-channel-publish` (`src/stealth.min.js`) comes from puppeteer-extra under MIT.
+`wechat-video-channel-publish` (`src/stealth.min.js`) comes from puppeteer-extra under
+MIT; its copyright and license text are in that skill's
+[THIRD_PARTY_NOTICES.md](skills/vipin/wechat-video-channel-publish/THIRD_PARTY_NOTICES.md).

@@ -18,9 +18,7 @@ Usage:
   node scripts/manage-accounts.js --set-default <id>
   node scripts/manage-accounts.js --remove <id>
 
-Expected account IDs:
-  umn
-  vipinapple
+Account IDs are the names you passed to setup with --account.
 `);
 }
 
@@ -33,8 +31,7 @@ async function main() {
 
       if (accounts.length === 0) {
         console.log('\nNo accounts configured.');
-        console.log('Run: pnpm run setup -- --account umn --email <umn address>');
-        console.log('Run: pnpm run setup -- --account vipinapple --email <personal address>\n');
+        console.log('Run: npm run setup -- --account <name> --email <address>\n');
         return;
       }
 

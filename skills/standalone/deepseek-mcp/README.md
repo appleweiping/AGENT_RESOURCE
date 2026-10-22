@@ -50,7 +50,7 @@ rmcp_client = true
 
 [mcp_servers.deepseek]
 command = "node"
-args = ["C:\\path\\to\\AGENT_RESOURCE\\skills\\standalone\\deepseek-mcp\\deepseek_mcp.mjs"]
+args = ["<absolute path to this folder>/deepseek_mcp.mjs"]
 env_vars = ["DEEPSEEK_API_KEY", "DEEPSEEK_MODEL", "DEEPSEEK_BASE_URL"]
 startup_timeout_sec = 10
 tool_timeout_sec = 120

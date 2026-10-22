@@ -10,7 +10,7 @@ flows (see [THIRD_PARTY_SKILLS.md](../../../THIRD_PARTY_SKILLS.md)).
 
 Needs: Node.js 18+ (`npm install` or `pnpm install` in this folder for `minimist`).
 Runtime files go to `$COMMUNICATION_ASSISTANT_HOME`, or to `.wiki-tmp/communication-assistant/`
-inside this folder if that is unset. (`SKILL.md` shows the paths on my own machine.)
+inside this folder if that is unset; `node scripts/outbox.js paths` prints them.
 
 ## Example
 

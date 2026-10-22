@@ -1,6 +1,6 @@
 ---
 name: project-hardness
-description: Turn any D-drive project into an AI-readable, maintainable, verifiable causal layer under the project's `.agent/` directory, and harden vague requirements into concrete task specs before editing. Use when (a) starting work on an unfamiliar or large project, (b) you need to know a change's blast radius / do-not-modify boundaries, or (c) a requirement is vague and you need clarified goal + involved modules + edit paths + risks + acceptance criteria + test commands. Not a grep/index/chat-memory; it is a static, source-backed project model. Applies to every agent (Claude Code, Codex, OpenCode, etc.).
+description: Turn any local project into an AI-readable, maintainable, verifiable causal layer under the project's `.agent/` directory, and harden vague requirements into concrete task specs before editing. Use when (a) starting work on an unfamiliar or large project, (b) you need to know a change's blast radius / do-not-modify boundaries, or (c) a requirement is vague and you need clarified goal + involved modules + edit paths + risks + acceptance criteria + test commands. Not a grep/index/chat-memory; it is a static, source-backed project model. Applies to every agent (Claude Code, Codex, OpenCode, etc.).
 allowed-tools: Bash(*), Read, Glob, Grep
 ---
 
@@ -24,13 +24,13 @@ Only **cross-project lessons** are ever synced to agentmemory — project facts 
 
 ## Commands
 
-Run from the WEIPING_WIKI repo root (`D:\research\Vipin's Knowledgebase`):
+Run from the root of a WEIPING_WIKI checkout:
 
 ```bash
 # 1. Build / refresh the causal layer for a project
 python scripts/wiki.py hardness scan <project-path> [--name NAME] [--json]
 
-# 1b. Discover and harden EVERY important project under D: (de-duped, safety-excluded)
+# 1b. Discover and scan every important project on the machine (de-duped, safety-excluded)
 python scripts/wiki.py hardness scan-all [--dry-run] [--json]
 
 # 2. Harden a vague requirement into a concrete task spec (.agent/tasks/<id>.md)

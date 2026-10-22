@@ -6,8 +6,8 @@ page-by-page panel scripts and a JSONL pack of image prompts.
 
 The agent does the writing; the three Python scripts handle the boring parts
 (listing books in a folder, pulling plain text out of TXT/Markdown, ZIP archives of
-text files or PDF, splitting long text into chunks). `SKILL.md` defaults to my book
-folder `D:\Company\anime\literature-books`; pass your own path instead.
+text files or PDF, splitting long text into chunks). Pass the book folder as an
+argument, or set `LITERATURE_BOOKS_DIR` once and the skill uses it as the default.
 
 Needs: Python 3.10+. Plain text works with the standard library; PDF needs `pypdf`.
 

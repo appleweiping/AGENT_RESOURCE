@@ -18,51 +18,36 @@ Use this skill for Vipin's Gmail/Google Workspace email workflows: reading, sear
 
 ## Local Paths
 
-Skill install:
+OAuth files and the action log are local-only and ignored by Git. The scripts look for
+them in this order:
 
-```powershell
-D:\Research\vipin's knowledgebase\.codex\skills\email-assistant
-```
+1. `$env:EMAIL_ASSISTANT_AUTH_DIR` and `$env:EMAIL_ASSISTANT_LOG_DIR`, if set.
+2. Otherwise `.wiki-tmp/email-assistant/auth/` and `.wiki-tmp/email-assistant/logs/`
+   inside the skill folder (or inside the enclosing notes repo, if the skill sits in a
+   folder that has both `AGENTS.md` and `.wiki-schema.md`).
 
-Source mirror:
-
-```powershell
-D:\Research\vipin's knowledgebase\skill\email-assistant
-```
-
-OAuth files are local-only and ignored by Git:
-
-```powershell
-D:\Research\vipin's knowledgebase\.wiki-tmp\email-assistant\auth\credentials.json
-D:\Research\vipin's knowledgebase\.wiki-tmp\email-assistant\auth\tokens.json
-```
-
-Override paths only when needed:
-
-```powershell
-$env:EMAIL_ASSISTANT_AUTH_DIR = "D:\Research\vipin's knowledgebase\.wiki-tmp\email-assistant\auth"
-$env:EMAIL_ASSISTANT_LOG_DIR = "D:\Research\vipin's knowledgebase\.wiki-tmp\email-assistant\logs"
-```
+The auth folder holds `credentials.json` (the OAuth client you download) and
+`tokens.json` (written by setup).
 
 ## First-Time Setup
 
 From the skill directory:
 
 ```powershell
-& "D:\cc\node\corepack.cmd" pnpm install
+npm install
 ```
 
-Create a Google Cloud OAuth Desktop credential with Gmail API enabled, then save the downloaded `credentials.json` to:
+(`pnpm install` works too; there is a `pnpm-lock.yaml`.)
+
+Create a Google Cloud OAuth Desktop credential with the Gmail API enabled
+(`docs/google-cloud-setup.md`), then save the downloaded file as `credentials.json` in
+the auth folder above.
+
+Authenticate each account under a short name; I use `umn` and `vipinapple`:
 
 ```powershell
-.wiki-tmp\email-assistant\auth\credentials.json
-```
-
-Authenticate both accounts:
-
-```powershell
-& "D:\cc\node\corepack.cmd" pnpm run setup -- --account umn --email "<umn email address>"
-& "D:\cc\node\corepack.cmd" pnpm run setup -- --account vipinapple --email "<vipinapple email address>"
+npm run setup -- --account umn --email "<umn email address>"
+npm run setup -- --account vipinapple --email "<personal email address>"
 node scripts/manage-accounts.js --list
 ```
 
@@ -84,11 +69,7 @@ If UMN cannot authenticate through Gmail API, mark `umn` as pending and keep `vi
 
 ## Commands
 
-Run scripts from the skill directory:
-
-```powershell
-cd "D:\Research\vipin's knowledgebase\.codex\skills\email-assistant"
-```
+Run scripts from the skill directory.
 
 List accounts:
 

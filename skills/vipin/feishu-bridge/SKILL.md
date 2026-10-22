@@ -9,14 +9,16 @@ Use this as the router for Feishu/Lark work. Prefer official `lark-cli` API acce
 
 ## Local Runtime
 
-Use the verified D-drive binary first:
+Use the `lark-cli` binary the user installed. If `$env:LARK_CLI` is set, it holds the
+full path to the binary; otherwise expect `lark-cli` on `PATH`:
 
 ```powershell
-$LARK_CLI = "D:\Research\vipin's knowledgebase\.wiki-tmp\tools\lark-cli\v1.0.32\bin\lark-cli.exe"
+$LARK_CLI = if ($env:LARK_CLI) { $env:LARK_CLI } else { "lark-cli" }
 & $LARK_CLI --version
 ```
 
-Installed version: `lark-cli 1.0.32`, from `larksuite/cli` release `v1.0.32`.
+I use `lark-cli 1.0.32` from the `larksuite/cli` release `v1.0.32`; see
+`references/local-runtime.md`.
 
 ## Routing
 
@@ -27,7 +29,7 @@ Installed version: `lark-cli 1.0.32`, from `larksuite/cli` release `v1.0.32`.
 5. If a document contains an embedded spreadsheet or bitable, extract the token and switch to `lark-sheets` or `lark-base` rather than stopping at the embedded tag.
 6. If the user asks to read/write a multi-dimensional table / 多维表格 / bitable, use `lark-base`.
 7. If the user asks to send, reply, search, or inspect messages, use `lark-im`, and dry-run risky sends before execution.
-8. If the user gives a web link that cannot be cleanly handled by token/API, or asks to fill fields/buttons on a Feishu page/form, use `chrome-automation` with the D-drive `agent-browser` runtime.
+8. If the user gives a web link that cannot be cleanly handled by token/API, or asks to fill fields/buttons on a Feishu page/form, use `chrome-automation` (browser automation against the user's logged-in Chrome).
 
 ## Authentication
 
@@ -52,9 +54,9 @@ When `config init` or `auth login` emits a verification URL, forward the raw URL
 
 ## Smoke Test Checklist
 
-- `lark-cli --version` works from the D-drive path.
+- `& $LARK_CLI --version` works.
 - Domain help works, for example `docs --api-version v2 --help`, `wiki --help`, `base --help`, and `drive --help`.
 - OAuth/config status is checked.
 - Read/write tests are performed only against user-approved Feishu resources.
 - Browser-fill tests use `chrome-automation` on a test page or explicitly approved Feishu form.
-- Record verified and blocked capabilities in `vipin wiki` after setup or meaningful changes.
+- Tell the user which capabilities were verified and which are blocked (for example by missing OAuth scopes).

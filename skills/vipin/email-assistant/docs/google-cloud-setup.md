@@ -1,27 +1,22 @@
 # Google Cloud OAuth Setup
 
-Use this only for Vipin's personal `email-assistant` skill. Store secrets in the repo-local ignored auth directory, not inside the skill source.
+The scripts talk to Gmail through your own Google Cloud OAuth client. Keep its files in
+the local auth folder, never in git.
 
-## Auth Directory
+## Auth folder
 
-Default credentials path:
+- `$EMAIL_ASSISTANT_AUTH_DIR`, if set;
+- otherwise `.wiki-tmp/email-assistant/auth/` inside the skill folder (git-ignored).
 
-```powershell
-D:\Research\vipin's knowledgebase\.wiki-tmp\email-assistant\auth\credentials.json
-```
+It holds two files:
 
-Default token path, created by OAuth:
+- `credentials.json`: the OAuth client you download in the steps below;
+- `tokens.json`: written by `npm run setup`, one entry per account.
 
-```powershell
-D:\Research\vipin's knowledgebase\.wiki-tmp\email-assistant\auth\tokens.json
-```
-
-Both paths are ignored by Git through `.wiki-tmp/`.
-
-## Google Cloud Steps
+## Google Cloud steps
 
 1. Open [Google Cloud Console](https://console.cloud.google.com/).
-2. Create or select a project, for example `Vipin Email Assistant`.
+2. Create or select a project, for example `Email Assistant`.
 3. Enable the Gmail API.
 4. Configure the OAuth consent screen.
 5. Add the Gmail account as a test user if the app is in testing mode.
@@ -30,29 +25,25 @@ Both paths are ignored by Git through `.wiki-tmp/`.
    - `https://www.googleapis.com/auth/gmail.compose`
    - `https://www.googleapis.com/auth/gmail.send`
 7. Create an OAuth Client ID with application type `Desktop app`.
-8. Download the JSON file and save it as:
+8. Download the JSON file and save it as `credentials.json` in the auth folder.
+
+## Local setup
+
+From the skill folder:
 
 ```powershell
-D:\Research\vipin's knowledgebase\.wiki-tmp\email-assistant\auth\credentials.json
-```
-
-## Local Setup
-
-From the installed skill directory:
-
-```powershell
-cd "D:\Research\vipin's knowledgebase\.codex\skills\email-assistant"
-& "D:\cc\node\corepack.cmd" pnpm install
-& "D:\cc\node\corepack.cmd" pnpm run setup -- --account umn --email "<umn email address>"
-& "D:\cc\node\corepack.cmd" pnpm run setup -- --account vipinapple --email "<personal email address>"
+npm install
+npm run setup -- --account work --email "<work email address>"
+npm run setup -- --account personal --email "<personal email address>"
 node scripts/manage-accounts.js --list
 ```
 
-The OAuth setup opens a browser. Complete account selection and consent manually.
+The setup opens a browser. Pick the account and accept the consent screen yourself.
 
-## Safety Notes
+## Safety notes
 
 - Do not commit `credentials.json`, `tokens.json`, browser profiles, cookies, or email bodies.
 - The default workflow creates drafts rather than sending.
 - Direct sends require `--confirm-send YES_SEND`.
-- If UMN blocks Gmail API auth, leave `umn` pending and keep `vipinapple` working.
+- If a university or work account blocks Gmail API access, leave that account pending
+  and keep the others working.

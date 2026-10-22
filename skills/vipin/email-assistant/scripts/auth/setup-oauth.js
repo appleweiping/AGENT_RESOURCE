@@ -101,8 +101,7 @@ async function setupOAuth(accountId, userEmail = null) {
 
       console.log('\nYou can now use the email-assistant skill.\n');
       console.log('Next steps:');
-      console.log('   - Add UMN: npm run setup -- --account umn --email <umn address>');
-      console.log('   - Add vipinapple: npm run setup -- --account vipinapple --email <personal address>');
+      console.log('   - Add another account: npm run setup -- --account <name> --email <address>');
       console.log('   - List accounts: node scripts/manage-accounts.js --list\n');
     } catch (error) {
       console.error('\nError exchanging code for tokens:', error.message);

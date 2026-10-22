@@ -209,7 +209,7 @@ description: |
 
 ### 二手来源（他人分析）
 - HuggingFace推文模型: https://huggingface.co/huggingtweets/bboczeng-lidangzzz
-- 本地wiki语料库: vipin's knowledgebase/wiki/entities/lidang.md
+- 我本地笔记里整理的李当语料页（未公开）
 
 ### 关键引用
 > 「买SP500/纳100」—— X profile标签

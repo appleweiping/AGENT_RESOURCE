@@ -7,14 +7,14 @@ description: Convert selected prose, novel, biography, history, or text-archive 
 
 ## Overview
 
-Use this skill to turn a source work or a folder of candidate books into a manga adaptation package. Default source archive: `D:\Company\anime\literature-books`.
+Use this skill to turn a source work or a folder of candidate books into a manga adaptation package. Default source archive: the folder in `$LITERATURE_BOOKS_DIR`, if set.
 
 The default output is an adaptation dossier, manga bible, chapter/page/panel script, storyboard brief, and image prompt pack. Copyright is not a hard gate by default, but every package must include source attribution and a publication-risk note.
 
 ## Workflow
 
 1. Locate the archive or source file.
-   - If no path is provided, use `D:\Company\anime\literature-books`.
+   - If no path is provided, use `$LITERATURE_BOOKS_DIR`; if that is not set either, ask the user where the books are.
    - For candidate discovery, run `scripts/inventory_books.py`.
    - For source extraction, run `scripts/extract_text.py`.
    - For long texts, run `scripts/chunk_source.py` before deep adaptation.

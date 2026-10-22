@@ -69,7 +69,7 @@ export function loadTokens(accountId = null) {
   if (!targetAccount || !config.accounts[targetAccount]) {
     const available = Object.keys(config.accounts).join(', ') || 'none';
     throw new Error(
-      `Account '${targetAccount || 'default'}' not found. Available accounts: ${available}. Run: pnpm run setup -- --account umn or pnpm run setup -- --account vipinapple`
+      `Account '${targetAccount || 'default'}' not found. Available accounts: ${available}. Run: npm run setup -- --account <name> --email <address>`
     );
   }
 
