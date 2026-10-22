@@ -1,5 +1,0 @@
-{
-  "_README": "Human-owned verdict overrides for the disk-audit ledger. The audit writer READS this file and NEVER edits it. Keys are normalized project roots with forward slashes (e.g. 'D:/Research/Uncertainty') OR a bare project name. Each value is {\"verdict\": \"keep\" | \"quarantine\", \"reason\": \"...\"}. You can force keep or quarantine; you can NEVER make the writer emit a delete. Deletion is always a separate, explicit human action outside this system.",
-  "overrides": {
-  }
-}

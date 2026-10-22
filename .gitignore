@@ -47,3 +47,6 @@ skills/standalone/huashu-design/node_modules/
 skills/standalone/huashu-design/assets/bgm-*.mp3
 skills/standalone/huashu-design/assets/sfx/
 skills/standalone/huashu-design/assets/showcases/
+
+# Local disk audit ledger written by my wiki tooling; never publish it.
+disk-audit/
