@@ -1,138 +1,88 @@
-<p align="center">
-  <img src="banner.png" alt="AGENT_RESOURCE" width="100%">
-</p>
+# AGENT_RESOURCE
 
-<h1 align="center">AGENT_RESOURCE</h1>
+My own agent skills for Claude Code and Codex, plus pointers to the third-party skills I use.
 
-<p align="center">
-  <strong>Curated skills, workflows, references, and routing guidance for agentic development.</strong>
-</p>
+I use Claude Code and Codex on a Windows machine, and these are the skills I wrote for
+my own chores: keeping my drives organized, drafting replies across chat apps and Gmail,
+turning books into manga scripts, publishing videos, and making an agent understand a
+project before it edits anything. Skills written by other people are not copied here any
+more; [THIRD_PARTY_SKILLS.md](THIRD_PARTY_SKILLS.md) lists them with pinned upstream
+commits, and a script downloads them for you.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/skills-curated-orange" alt="Curated skills">
-  <img src="https://img.shields.io/badge/routing-implicit-blue" alt="Implicit routing">
-  <img src="https://img.shields.io/badge/memory-agentmemory-green" alt="agentmemory">
-  <img src="https://img.shields.io/badge/license-Apache--2.0-lightgrey" alt="Apache-2.0">
-</p>
-
----
-
-## What This Is
-
-`AGENT_RESOURCE` is a D-drive-first library of reusable agent skills, workflow templates, references, and source mirrors. `D:\agent-resources` is a compatibility junction to this canonical root. Agents should read `AGENTS.md`, `README.md`, and `SKILL-INDEX.md` before changing shared skill assets.
-
-Its job is simple: before an agent improvises a complex workflow, it should check this repository, find the right skill by task intent, read that skill's `SKILL.md`, and use the existing method.
-
-This repository is designed to be public-safe. It should contain reusable instructions, scripts, templates, and provenance notes; it must not contain local account state, API keys, runtime caches, private logs, or generated toolchain payloads.
-
-## Start Here
-
-| File or folder | Purpose |
-| --- | --- |
-| `AGENTS.md` | Agent operating contract for shared skill/resource maintenance. |
-| `SKILL-INDEX.md` | Main routing map: what each skill does, when to use it, and where it lives. |
-| `skills/` | Curated installable skill collections. |
-| `slash-commands/` | Reusable command workflows and checklists. |
-| `references/` | Documentation, guides, and reusable source notes. |
-| `templates/` | Project and README templates. |
-| `tools/` | Discovery, validation, public-safety, and maintenance utilities. |
-
-`repos/` is intentionally ignored by Git. Keep full upstream clones and bulky mirrors local unless a small curated subset is deliberately promoted into `skills/`, `references/`, or `templates/`.
-
-## Implicit Skill Routing
-
-Agents should trigger skills from user intent, not only from exact skill names.
-
-1. Classify the task: debugging, README, research audit, frontend, MCP, security, browser, document, game, writing, etc.
-2. Search `SKILL-INDEX.md` and relevant skill frontmatter.
-3. Read the matched `SKILL.md`.
-4. Use bundled scripts/references when the skill provides them.
-5. Save useful routing lessons to agentmemory or durable docs.
-
-For deterministic discovery across the complete library, use the dependency-free catalog CLI:
-
-```powershell
-python .\tools\skill_catalog.py catalog
-python .\tools\skill_catalog.py search "debug failing tests"
-python .\tools\skill_catalog.py search "browser automation" --collection vipin --json
-python .\tools\skill_catalog.py validate
+```text
+$ python tools/skill_catalog.py validate
+Validated with 0 error(s) and 0 warning(s).
+$ python tools/skill_catalog.py search "turn a novel into a manga script" --limit 1
+ 33  literature-to-manga                  skills/vipin/literature-to-manga/SKILL.md
+     Convert selected prose, novel, biography, history, or text-archive works into manga adaptation packages. Use when ask...
+$ scripts/fetch-third-party.sh superpowers gsap-skills
+superpowers -> third_party/superpowers @ f2cbfbe
+gsap-skills -> third_party/gsap-skills @ aed9cfd
 ```
 
-The validator checks the core constraints from the [Agent Skills specification](https://agentskills.io/specification): required frontmatter failures are blocking, while inherited compatibility debt such as non-kebab-case vendor names, duplicate names, invalid UTF-8, and oversized legacy manifests is reported as warnings. Use `--strict` for a fully conforming collection. Pull requests and direct pushes apply strict validation only to changed `SKILL.md` files, so upstream debt cannot grow while existing vendored packs remain usable. New branch and tag pushes compare against the remote default branch; an initial default-branch push with no baseline validates the complete library strictly. Relative-path pointer manifests used by vendored packs are resolved safely inside the repository on every platform.
+## My skills
 
-The architecture, upstream patterns, trust boundaries, and verification evidence are recorded in [Skill Library Quality Gate](docs/skill-library-quality-2026-08-23.md).
+| Skill | What it does | Needs |
+| --- | --- | --- |
+| [workstation-maintenance](skills/vipin/workstation-maintenance) | Inventories my drives, plans file moves in approval batches, moves only approved batches, and can roll them back | Windows, PowerShell 5.1+ |
+| [project-hardness](skills/vipin/project-hardness) | Has the agent map a project (architecture, constraints, blast radius) and turn a vague request into a task spec before editing | Python 3 and my [WEIPING_WIKI](https://github.com/appleweiping/WEIPING_WIKI) repo, which holds the engine |
+| [literature-to-manga](skills/vipin/literature-to-manga) | Turns a novel or biography into a manga adaptation package: brief, bible, panel scripts, image prompts | Python 3.10+ |
+| [communication-assistant](skills/vipin/communication-assistant) | Triage and draft replies for WeChat, WhatsApp, QQ, Feishu and email; keeps a local outbox and never sends on its own | Node.js 18+ |
+| [email-assistant](skills/vipin/email-assistant) | Gmail API scripts to search, read, summarize and draft mail; sending needs an explicit confirm flag | Node.js 18+, a Google Cloud OAuth client |
+| [feishu-bridge](skills/vipin/feishu-bridge) | Routes Feishu/Lark tasks to `lark-cli` and the official `lark-*` skills | `lark-cli` and the [Lark skills](THIRD_PARTY_SKILLS.md) |
+| [wechat-video-channel-publish](skills/vipin/wechat-video-channel-publish) | Playwright CLI that logs into WeChat Channels (视频号) and uploads, schedules or drafts a video | Node.js 20+ |
+| [lidang-perspective](skills/standalone/lidang-perspective) | Persona skill built from Li Dang's public writing, for career and tech-path questions (in Chinese) | nothing |
+| [deepseek-mcp](skills/standalone/deepseek-mcp) | Tiny MCP server that lets Codex call DeepSeek as a side tool | Node.js 18+ or Python 3, a DeepSeek API key |
 
-Examples:
+Each folder has a README with one usage example. [SKILL-INDEX.md](SKILL-INDEX.md) has
+the "use this when..." line for each skill, which is what I point my agents at.
 
-| User asks for | Use |
-| --- | --- |
-| "organize my C/D drives", "clean up workstation", "organize D root folders", "keep devtools and wiki in sync" | `vipin/workstation-maintenance`, then `weiping-wiki` for public-safe wiki updates. Live file move plans defer recent files, cap batch sizes by default, generate approval packets, and can preflight every batch without moving files. D-root plans can move eligible root directories into `D:\_Organized` while preserving old paths as junctions. Protected roots include `D:\Research`, `D:\AGENT_RESOURCE`, `D:\agent-resources`, `D:\AGENTIC_SCIENCE`, `D:\devtools`, and public devtools exports. Broad approval can cover all currently passing low-risk batches. |
-| "review this paper", "citation check", "experiment audit" | Project ARIS skills first. |
-| README polish, repo presentation, public onboarding | README/documentation skills. |
-| Broken tests, flaky behavior, unfamiliar error | Systematic debugging skills. |
-| Agent memory, MCP, tool routing, wrapper regressions | Agent architecture / MCP skills. |
-| New or updated skill | Skill creator / skill evaluation skills. |
+Several skills still assume my own folder layout (for example `D:\Research\...` in
+`SKILL.md`). Change those paths before you use them on your machine.
 
-## Skill Collections
+## Install a skill
 
-| Collection | Use |
-| --- | --- |
-| `vipin/` | Local custom skills for workstation maintenance, communication, Lark/Feishu, frontend, paper workflows, and publishing. |
-| `anthropics/` | Anthropic-oriented skills for API, MCP, web app testing, frontend design, and documents. |
-| `obra-superpowers/` | Engineering workflows such as debugging, TDD, code review, planning, and parallel work. |
-| `context-engineering-kit/` | Context engineering, DDD/TDD/review/reflexion/kaizen workflows. |
-| `trailofbits/` | Security, audit, static analysis, and protocol review skills. |
-| `ecc/` | Large agent harness skill and agent collection. |
-| `standalone/` | Independent skill packs and references. |
-
-## Operating Rules
-
-- Keep skills discoverable: `SKILL.md` frontmatter descriptions should say exactly when the skill should trigger.
-- Preserve source and license provenance for imported skill packs.
-- Prefer small curated skill folders over dumping whole upstream repositories.
-- Do not commit `repos/`, caches, browser profiles, generated runtime state, auth files, `.env`, or secrets.
-- Audit untracked additions before committing them.
-- Use `agentmemory` for live memory and cross-agent signals; use this repo for reusable skill assets and routing documentation.
-- Track provenance review notes for local skill additions, starting with [`docs/skill-provenance-audit-2026-06-01.md`](docs/skill-provenance-audit-2026-06-01.md).
-- Treat `skills/game-studios/` and `skills/godogen/` as local-only until their upstream source and redistribution license are confirmed.
-- Route `nuwa-skill` by intent only through the curated MIT-licensed core files committed in `skills/standalone/nuwa-skill/`.
-
-## Public-Safety Checklist
-
-Before changing repo visibility or publishing a release:
+A skill is just a folder with a `SKILL.md`. Clone the repo and link the folder into your
+agent's skills directory (`~/.claude/skills/` for Claude Code, `~/.codex/skills/` for Codex):
 
 ```powershell
-git status --short
-git ls-files
-powershell .\tools\Test-PublicSafety.ps1
-powershell .\tools\Test-HistorySafety.ps1
-powershell .\tools\Test-PrePushSafety.ps1
-powershell .\tools\Install-PrePushHook.ps1
+git clone https://github.com/appleweiping/AGENT_RESOURCE.git
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\literature-to-manga" `
+  -Target "$PWD\AGENT_RESOURCE\skills\vipin\literature-to-manga"
 ```
 
-Treat matches as findings until reviewed. The history scan permits a small allowlist of known documentation placeholders such as `ghp_your_new_github_token`; real credentials must be removed from current files, cleaned from public history, and rotated before publication.
-
-## Smoke Tests
-
-```powershell
-python .\tools\skill_catalog.py validate
-python -m unittest discover -s .\tools\tests -p "test_*.py"
-powershell .\tools\Test-ImplicitSkillRouting.ps1
-powershell .\tools\Test-PublicSafety.ps1
-powershell .\tools\Test-HistorySafety.ps1
-powershell .\tools\Test-PrePushSafety.ps1
+```bash
+git clone https://github.com/appleweiping/AGENT_RESOURCE.git
+ln -s "$PWD/AGENT_RESOURCE/skills/vipin/literature-to-manga" ~/.claude/skills/literature-to-manga
 ```
 
-These checks validate portable skill metadata, deterministic intent search, public-safety boundaries, Git history, and passive routing metadata. GitHub Actions runs the portable validation and safety subset on every push and pull request with read-only permissions and SHA-pinned actions.
+Then start a new session and ask for the task in plain words; the agent picks the skill
+from its description. Skills with scripts list their own install step (`npm install`,
+`pip install pypdf`, ...) in their README.
 
-## Related Projects
+## Third-party skills
 
-| Project | Role |
-| --- | --- |
-| [WEIPING_WIKI / vipin-wiki](https://github.com/appleweiping/vipin-wiki) | Public knowledge base, canonical agent operating contract, and compatibility home for historical `vipinknowledge` links. |
-| [devtools-public](https://github.com/appleweiping/devtools-public) | Clean public export of local Windows agent launchers and health checks. |
-| [agentmemory](https://github.com/rohitg00/agentmemory) | Upstream memory and MCP collaboration substrate. |
+```bash
+scripts/fetch-third-party.sh            # all of them, into ./third_party (git-ignored)
+.\scripts\fetch-third-party.ps1 shadcn  # Windows, just one
+```
+
+The list, the pinned commits and why each one is pinned to that commit are in
+[THIRD_PARTY_SKILLS.md](THIRD_PARTY_SKILLS.md).
+
+## Checks
+
+```bash
+python tools/skill_catalog.py validate --strict    # SKILL.md frontmatter rules
+python -m unittest discover -s tools/tests -p "test_*.py"
+python tools/check_links.py                        # relative Markdown links resolve
+```
+
+GitHub Actions runs these plus a secret scan (`tools/Test-PublicSafety.ps1`) on every push.
 
 ## License
 
-Apache-2.0. Imported skill packs may carry their own upstream licenses; preserve those notices where present.
+Apache-2.0 ([LICENSE](LICENSE)) covers my own skills and scripts in this repo only.
+Third-party skills keep their upstream licenses and are not redistributed here; see
+[THIRD_PARTY_SKILLS.md](THIRD_PARTY_SKILLS.md). One generated file inside
+`wechat-video-channel-publish` (`src/stealth.min.js`) comes from puppeteer-extra under MIT.
