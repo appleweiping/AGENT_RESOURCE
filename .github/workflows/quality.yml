@@ -34,6 +34,19 @@ jobs:
       - name: Check relative Markdown links
         run: python tools/check_links.py
 
-      - name: Scan for committed secrets
+      - name: Scan for committed secrets and local paths
         shell: pwsh
         run: ./tools/Test-PublicSafety.ps1
+
+  workstation-maintenance:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run the self-test on temporary folders (Windows PowerShell 5.1)
+        shell: powershell
+        run: .\skills\vipin\workstation-maintenance\scripts\Test-WorkstationMaintenance.ps1

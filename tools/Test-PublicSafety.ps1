@@ -78,6 +78,19 @@ try {
         throw "Strict public-safety scan failed in $resolved"
     }
 
+    # Absolute Windows paths (a drive letter, a colon, a backslash) describe one
+    # machine's folder layout. Skills take such paths from a git-ignored config
+    # file or an environment variable instead, so tracked files should have none.
+    $drivePathPattern = '(^|[^A-Za-z0-9])[A-Za-z]:\\\\?[A-Za-z0-9_.$%-]'
+    $drivePathHits = @(& git -C $resolved -c core.quotePath=false grep -n -I -E -e $drivePathPattern -- . 2>$null)
+    if ($LASTEXITCODE -notin @(0, 1)) {
+        throw "git grep drive-path scan failed in $resolved"
+    }
+    if ($drivePathHits.Count -gt 0) {
+        $drivePathHits | Select-Object -First 80
+        throw "Tracked files contain absolute Windows paths in $resolved"
+    }
+
     Write-Host "Strict public-safety scan passed: $resolved" -ForegroundColor Green
 } finally {
     Pop-Location
