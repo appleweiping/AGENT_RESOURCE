@@ -30,23 +30,27 @@ The server reads:
 
 Do not put the API key in `config.toml`.
 
+There is also a Python version (`deepseek_mcp.py`, standard library only) with the same tool.
+
 ## Test
 
+Needs Node.js 18+ (built-in `fetch`) and `DEEPSEEK_API_KEY` in the environment:
+
 ```powershell
-& "C:\Users\admin\AppData\Local\OpenAI\Codex\bin\node.exe" D:\Skill\deepseek-mcp\deepseek_mcp.mjs --prompt "Say hello in one sentence."
+node .\deepseek_mcp.mjs --prompt "Say hello in one sentence."
 ```
 
 ## Codex Config
 
-Add this to `C:\Users\admin\.codex\config.toml`:
+Add this to `~/.codex/config.toml`, with the absolute path to this folder:
 
 ```toml
 [features]
 rmcp_client = true
 
 [mcp_servers.deepseek]
-command = "C:\\Users\\admin\\AppData\\Local\\OpenAI\\Codex\\bin\\node.exe"
-args = ["D:\\Skill\\deepseek-mcp\\deepseek_mcp.mjs"]
+command = "node"
+args = ["C:\\path\\to\\AGENT_RESOURCE\\skills\\standalone\\deepseek-mcp\\deepseek_mcp.mjs"]
 env_vars = ["DEEPSEEK_API_KEY", "DEEPSEEK_MODEL", "DEEPSEEK_BASE_URL"]
 startup_timeout_sec = 10
 tool_timeout_sec = 120
