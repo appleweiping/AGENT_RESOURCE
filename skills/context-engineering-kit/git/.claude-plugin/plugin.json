@@ -1,9 +1,0 @@
-{
-  "name": "git",
-  "version": "3.0.0",
-  "description": "Introduces commands for commit and PRs creation, plus skills for git worktrees and notes.",
-  "author": {
-    "name": "Vlad Goncharov",
-    "email": "vlad.goncharov@neolab.finance"
-  }
-}

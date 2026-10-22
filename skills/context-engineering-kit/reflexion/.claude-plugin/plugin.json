@@ -1,9 +1,0 @@
-{
-  "name": "reflexion",
-  "version": "3.0.0",
-  "description": "Collection of commands that force LLM to reflect on previous response and output. Based on papers like Self-Refine and Reflexion. These techniques improve the output of large language models by introducing feedback and refinement loops.",
-  "author": {
-    "name": "Vlad Goncharov",
-    "email": "vlad.goncharov@neolab.finance"
-  }
-}
