@@ -2,8 +2,9 @@
 
 These are skills written by other people that I run alongside my own. This repo
 used to carry full copies of them; it now only lists where they come from and the
-commit to pin. Get them from upstream with the fetch script below, not from this
-repo's history.
+commit to pin. Older commits of this repo still contain those copies, and they were
+never covered by this repo's license, so get them from upstream with the fetch script
+below, not from this repo's history.
 
 To download them into a local, git-ignored `third_party/` folder:
 
@@ -72,6 +73,17 @@ checked each old copy against upstream history by comparing git blob hashes:
 
 My old `skills/vipin/frontend-design` was a second, older copy of Anthropic's
 `frontend-design` skill; its content is identical to anthropics/skills commit `ef74077`.
+
+## Adapted copies that stay in this repo
+
+Two of the skills in this repo began as other people's MIT-licensed code. I edited
+them for my own setup and kept them here, under MIT rather than Apache-2.0, with the
+upstream notices:
+
+| My skill | Started from | Details |
+| --- | --- | --- |
+| [email-assistant](skills/vipin/email-assistant) | `gmail-skill`, MIT; its package names no author and I have not found the original repo (a copy is public in [benchflow-ai/skillsbench](https://github.com/benchflow-ai/skillsbench/tree/main/tasks-extra/scheduling-email-assistant/environment/skills/gmail-skill)) | [README](skills/vipin/email-assistant/README.md#where-this-came-from), [LICENSE](skills/vipin/email-assistant/LICENSE) |
+| [wechat-video-channel-publish](skills/vipin/wechat-video-channel-publish) | [puppyfront-web/social-publish-skills](https://github.com/puppyfront-web/social-publish-skills) `c8a46f6`, the Tencent part; MIT | [THIRD_PARTY_NOTICES.md](skills/vipin/wechat-video-channel-publish/THIRD_PARTY_NOTICES.md), [LICENSE](skills/vipin/wechat-video-channel-publish/LICENSE) |
 
 ## Used, but never copied here
 
