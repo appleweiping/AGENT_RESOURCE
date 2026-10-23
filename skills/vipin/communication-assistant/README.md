@@ -4,7 +4,7 @@ My router for chat and email chores across WeChat, WhatsApp, QQ, Feishu/Lark and
 Gmail: summarize unread messages in Chinese, draft replies, and keep drafts in a local
 outbox. The default is "prefill, don't send"; nothing goes out without my explicit OK.
 
-It hands real work to other skills: `email-assistant` for Gmail, `feishu-bridge` plus
+It hands real work to other skills: `gmail-skill` for Gmail (third-party, see [THIRD_PARTY_SKILLS.md](../../../THIRD_PARTY_SKILLS.md)), `feishu-bridge` plus
 the official `lark-*` skills for Feishu, and a browser-automation skill for web-only
 flows. `SKILL.md` names `chrome-automation` from anbeime/skill, which is not in this
 repo; any browser tool the agent has can stand in (see

@@ -18,7 +18,6 @@ class RepositoryRoutingTests(unittest.TestCase):
             "organize old files on my drives": "workstation-maintenance",
             "turn a novel into a manga script": "literature-to-manga",
             "harden a vague requirement before editing a large project": "project-hardness",
-            "draft email replies in gmail": "email-assistant",
             "summarize a Feishu document link": "feishu-bridge",
             "triage unread wechat messages and prefill a reply": "communication-assistant",
             "upload a video to wechat channels": "wechat-video-channel-publish",

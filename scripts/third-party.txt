@@ -30,3 +30,4 @@ frontend-slides             zarazhangrui/frontend-slides           8dca834fc61ab
 beautiful-html-templates    zarazhangrui/beautiful-html-templates  8a8ae23f46c549976f4ae03e0c3ddfa9626bf09c  .
 readme-blueprint-generator  github/awesome-copilot                 c8d54ebc290b4c6dbb65b4d6294522c6e2ec171c  skills/readme-blueprint-generator
 awesome-claude-code         hesreallyhim/awesome-claude-code       29755104e1f15404f99db9e5f381e23960efc4a0  .claude/commands resources templates tools/readme_tree
+gmail-skill                 jeffvincent/claude-config              2bf5ecae90c7025f018cd1a9989c304d60fae1f7  skills/gmail-skill

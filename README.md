@@ -5,9 +5,8 @@ Agent skills I wrote or adapted for Claude Code and Codex, plus pointers to the 
 I use Claude Code and Codex on a Windows machine, and these are the skills I keep for
 my own chores: keeping my drives organized, drafting replies across chat apps and Gmail,
 turning books into manga scripts, publishing videos, and making an agent understand a
-project before it edits anything. I wrote most of them. Two, `email-assistant` and
-`wechat-video-channel-publish`, are edited copies of other people's MIT-licensed code and
-keep that license (see [License](#license)). Skills by other people that I use
+project before it edits anything. I wrote most of them. One, `wechat-video-channel-publish`, is an edited copy of other
+people's MIT-licensed code and keeps that license (see [License](#license)). Skills by other people that I use
 unmodified are no longer copied here; [THIRD_PARTY_SKILLS.md](THIRD_PARTY_SKILLS.md)
 lists them with pinned upstream commits, and a script downloads them for you.
 
@@ -30,7 +29,6 @@ gsap-skills -> third_party/gsap-skills @ aed9cfd
 | [project-hardness](skills/vipin/project-hardness) | Has the agent map a project (architecture, constraints, blast radius) and turn a vague request into a task spec before editing | Python 3 and my [WEIPING_WIKI](https://github.com/appleweiping/WEIPING_WIKI) repo, which holds the engine |
 | [literature-to-manga](skills/vipin/literature-to-manga) | Turns a novel or biography into a manga adaptation package: brief, bible, panel scripts, image prompts | Python 3.10+ |
 | [communication-assistant](skills/vipin/communication-assistant) | Triage and draft replies for WeChat, WhatsApp, QQ, Feishu and email; keeps a local outbox and never sends on its own | Node.js 18+ |
-| [email-assistant](skills/vipin/email-assistant) | Gmail API scripts to search, read, summarize and draft mail; sending needs an explicit confirm flag. Edited copy of `gmail-skill` (MIT) | Node.js 18+, a Google Cloud OAuth client |
 | [feishu-bridge](skills/vipin/feishu-bridge) | Routes Feishu/Lark tasks to `lark-cli` and the official `lark-*` skills | `lark-cli` and the [Lark skills](THIRD_PARTY_SKILLS.md); a browser-automation skill for web-only pages |
 | [wechat-video-channel-publish](skills/vipin/wechat-video-channel-publish) | Playwright CLI that logs into WeChat Channels (视频号) and uploads, schedules or drafts a video. Edited copy of part of [social-publish-skills](https://github.com/puppyfront-web/social-publish-skills) (MIT) | Node.js 20+ |
 | [lidang-perspective](skills/standalone/lidang-perspective) | Persona skill built from Li Dang's public writing, for career and tech-path questions (in Chinese) | nothing |
@@ -87,12 +85,9 @@ GitHub Actions runs these plus a secret scan (`tools/Test-PublicSafety.ps1`) on 
 
 ## License
 
-Apache-2.0 ([LICENSE](LICENSE)) covers this repo except two skill folders, which are
-edited copies of other people's MIT-licensed code and stay under MIT:
+Apache-2.0 ([LICENSE](LICENSE)) covers this repo except one skill folder, which is an
+edited copy of other people's MIT-licensed code and stays under MIT:
 
-- [`skills/vipin/email-assistant`](skills/vipin/email-assistant) started as `gmail-skill`,
-  whose author I have not been able to find. Its [LICENSE](skills/vipin/email-assistant/LICENSE)
-  is MIT; its README says which scripts are unchanged and what I edited.
 - [`skills/vipin/wechat-video-channel-publish`](skills/vipin/wechat-video-channel-publish)
   started as the WeChat Channels part of
   [puppyfront-web/social-publish-skills](https://github.com/puppyfront-web/social-publish-skills).

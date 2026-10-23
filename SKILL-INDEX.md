@@ -29,11 +29,6 @@ commits in [THIRD_PARTY_SKILLS.md](THIRD_PARTY_SKILLS.md) and download into
 - When: "what did I miss", "draft a reply to ...", "prefill this message", anything spanning several chat apps.
 - Path: [skills/vipin/communication-assistant](skills/vipin/communication-assistant)
 
-## email-assistant
-- What: Gmail API scripts to search, read, summarize, translate and draft mail for several accounts; sending needs `--confirm-send YES_SEND`.
-- When: Reading or answering Gmail / Google Workspace mail without opening a browser.
-- Path: [skills/vipin/email-assistant](skills/vipin/email-assistant)
-
 ## feishu-bridge
 - What: Routing rules for Feishu/Lark: official `lark-cli` API first, browser automation only for web-only pages and forms.
 - When: Any Feishu/Lark link, doc, wiki, Base, Sheets, message or form (飞书文档、知识库、多维表格、表单).

@@ -76,13 +76,11 @@ My old `skills/vipin/frontend-design` was a second, older copy of Anthropic's
 
 ## Adapted copies that stay in this repo
 
-Two of the skills in this repo began as other people's MIT-licensed code. I edited
-them for my own setup and kept them here, under MIT rather than Apache-2.0, with the
-upstream notices:
+One skill in this repo began as other people's MIT-licensed code. I edited it for my
+own setup and kept it here, under MIT rather than Apache-2.0, with the upstream notices:
 
 | My skill | Started from | Details |
 | --- | --- | --- |
-| [email-assistant](skills/vipin/email-assistant) | `gmail-skill`, MIT; its package names no author and I have not found the original repo (a copy is public in [benchflow-ai/skillsbench](https://github.com/benchflow-ai/skillsbench/tree/main/tasks-extra/scheduling-email-assistant/environment/skills/gmail-skill)) | [README](skills/vipin/email-assistant/README.md#where-this-came-from), [LICENSE](skills/vipin/email-assistant/LICENSE) |
 | [wechat-video-channel-publish](skills/vipin/wechat-video-channel-publish) | [puppyfront-web/social-publish-skills](https://github.com/puppyfront-web/social-publish-skills) `c8a46f6`, the Tencent part; MIT | [THIRD_PARTY_NOTICES.md](skills/vipin/wechat-video-channel-publish/THIRD_PARTY_NOTICES.md), [LICENSE](skills/vipin/wechat-video-channel-publish/LICENSE) |
 
 ## Used, but never copied here
@@ -91,6 +89,7 @@ upstream notices:
 | --- | --- | --- |
 | [jnMetaCode/agency-agents-zh](https://github.com/jnMetaCode/agency-agents-zh) | MIT | Chinese-language specialist subagents (engineering, design, marketing) installed into Claude Code |
 | [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills) | CC BY-NC 4.0 | Planning, writing and reviewing research papers |
+| [jeffvincent/claude-config](https://github.com/jeffvincent/claude-config/tree/2bf5ecae90c7025f018cd1a9989c304d60fae1f7/skills/gmail-skill) (`gmail-skill`, by Jeff Vincent) | No LICENSE file; its `package.json` says MIT | Gmail search, read, label and draft scripts that `communication-assistant` hands email to. Fetched by the script above (`gmail-skill`). |
 
 ## Why they are not vendored any more
 

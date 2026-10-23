@@ -42,7 +42,7 @@ Use the safest available adapter for each task:
 
 | Platform | First choice | Fallback | Notes |
 | --- | --- | --- | --- |
-| Email | `email-assistant` | browser review via `chrome-automation` | Email has real Gmail drafts; use those before chat-style outbox. |
+| Email | `gmail-skill` (third-party; see THIRD_PARTY_SKILLS.md) | browser review via `chrome-automation` | Email has real Gmail drafts; use those before chat-style outbox. |
 | Feishu/Lark | `lark-im` / `feishu-bridge` | `chrome-automation` | API first, browser fallback for web-only flows. |
 | WeChat | `wechat-cli` read/search if configured | `wxauto` Windows client prefill | Personal WeChat has no stable official user API; avoid password storage. |
 | WhatsApp | WhatsApp Web QR session via `whatsapp-web.js`/WAHA-style adapter | OpenClaw/Warelay if the user wants a heavier gateway | Prefer isolated browser/session profile. |

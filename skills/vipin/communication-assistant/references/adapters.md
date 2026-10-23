@@ -4,7 +4,7 @@ This skill is an aggregate router. Prefer the narrowest adapter that can safely 
 
 ## Email
 
-- Use `$email-assistant` for Gmail/Google Workspace.
+- Use `gmail-skill` (third-party, fetched via `scripts/fetch-third-party.*`) for Gmail/Google Workspace.
 - It already has draft semantics, account profiles, OAuth storage, and send confirmation gates.
 - Use this skill's outbox only for cross-channel planning or when the user wants a single queue across platforms.
 
