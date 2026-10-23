@@ -6,7 +6,9 @@ outbox. The default is "prefill, don't send"; nothing goes out without my explic
 
 It hands real work to other skills: `email-assistant` for Gmail, `feishu-bridge` plus
 the official `lark-*` skills for Feishu, and a browser-automation skill for web-only
-flows (see [THIRD_PARTY_SKILLS.md](../../../THIRD_PARTY_SKILLS.md)).
+flows. `SKILL.md` names `chrome-automation` from anbeime/skill, which is not in this
+repo; any browser tool the agent has can stand in (see
+[THIRD_PARTY_SKILLS.md](../../../THIRD_PARTY_SKILLS.md)).
 
 Needs: Node.js 18+ (`npm install` or `pnpm install` in this folder for `minimist`).
 Runtime files go to `$COMMUNICATION_ASSISTANT_HOME`, or to `.wiki-tmp/communication-assistant/`

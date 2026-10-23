@@ -5,7 +5,7 @@ description: Route Feishu/Lark content access for Codex. Use when the user asks 
 
 # Feishu Bridge
 
-Use this as the router for Feishu/Lark work. Prefer official `lark-cli` API access whenever a task can be expressed as Docs/Wiki/Drive/Base/Sheets/IM/Calendar/etc. Use `chrome-automation` only for web-only flows such as opening arbitrary shared links, pages that require the user's live browser login state, or filling interactive forms.
+Use this as the router for Feishu/Lark work. Prefer official `lark-cli` API access whenever a task can be expressed as Docs/Wiki/Drive/Base/Sheets/IM/Calendar/etc. Use browser automation only for web-only flows such as opening arbitrary shared links, pages that require the user's live browser login state, or filling interactive forms.
 
 ## Local Runtime
 
@@ -20,6 +20,11 @@ $LARK_CLI = if ($env:LARK_CLI) { $env:LARK_CLI } else { "lark-cli" }
 I use `lark-cli 1.0.32` from the `larksuite/cli` release `v1.0.32`; see
 `references/local-runtime.md`.
 
+For browser automation I use the `chrome-automation` skill from `anbeime/skill`, which
+drives the user's logged-in Chrome over CDP. It is not part of this repo; if it is not
+installed, use whatever browser-automation skill or tool the agent has. If there is
+none, say that the web-only step is blocked instead of guessing.
+
 ## Routing
 
 1. Read `lark-shared/SKILL.md` before configuring, logging in, switching identities, or handling scope errors.
@@ -29,7 +34,7 @@ I use `lark-cli 1.0.32` from the `larksuite/cli` release `v1.0.32`; see
 5. If a document contains an embedded spreadsheet or bitable, extract the token and switch to `lark-sheets` or `lark-base` rather than stopping at the embedded tag.
 6. If the user asks to read/write a multi-dimensional table / 多维表格 / bitable, use `lark-base`.
 7. If the user asks to send, reply, search, or inspect messages, use `lark-im`, and dry-run risky sends before execution.
-8. If the user gives a web link that cannot be cleanly handled by token/API, or asks to fill fields/buttons on a Feishu page/form, use `chrome-automation` (browser automation against the user's logged-in Chrome).
+8. If the user gives a web link that cannot be cleanly handled by token/API, or asks to fill fields/buttons on a Feishu page/form, use browser automation against the user's logged-in browser (`chrome-automation` if installed).
 
 ## Authentication
 
@@ -58,5 +63,5 @@ When `config init` or `auth login` emits a verification URL, forward the raw URL
 - Domain help works, for example `docs --api-version v2 --help`, `wiki --help`, `base --help`, and `drive --help`.
 - OAuth/config status is checked.
 - Read/write tests are performed only against user-approved Feishu resources.
-- Browser-fill tests use `chrome-automation` on a test page or explicitly approved Feishu form.
+- Browser-fill tests use the browser-automation skill on a test page or explicitly approved Feishu form.
 - Tell the user which capabilities were verified and which are blocked (for example by missing OAuth scopes).

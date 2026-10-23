@@ -9,7 +9,13 @@ It has no code of its own. It expects:
 
 - `lark-cli` from [larksuite/cli](https://github.com/larksuite/cli) (I use v1.0.32);
 - the official `lark-*` skills from the same repo. `scripts/fetch-third-party.sh lark-cli-skills`
-  downloads the pinned version (see [THIRD_PARTY_SKILLS.md](../../../THIRD_PARTY_SKILLS.md)).
+  downloads the pinned version (see [THIRD_PARTY_SKILLS.md](../../../THIRD_PARTY_SKILLS.md));
+- for web-only pages and forms only, a browser-automation skill. `SKILL.md` names
+  `chrome-automation` from [anbeime/skill](https://github.com/anbeime/skill), which I use
+  (`scripts/fetch-third-party.sh anbeime-skill`, then link
+  `third_party/anbeime-skill/skills/chrome-automation/chrome-automation`). That repo has
+  no license file, so it is not copied here. Any skill or tool that can drive a
+  logged-in browser works instead; without one, the API routes still work.
 
 Put `lark-cli` on `PATH`, or set `LARK_CLI` to the full path of the binary.
 
