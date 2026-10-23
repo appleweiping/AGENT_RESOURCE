@@ -2,7 +2,7 @@
   "name": "wechat-video-channel-publish-skill",
   "version": "0.1.0",
   "private": true,
-  "license": "Apache-2.0",
+  "license": "MIT",
   "description": "Codex skill + Playwright CLI for WeChat Channels video publishing",
   "type": "module",
   "bin": {
